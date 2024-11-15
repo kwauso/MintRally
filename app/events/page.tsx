@@ -1,3 +1,3 @@
 export default function Page() {
-    return <h1>Your are in events</h1>
+    return (<h1>You are in Events</h1>);
 }
