@@ -4,6 +4,8 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// ?:not NULL
+
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
@@ -14,8 +16,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model really {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
+model EventGroup {
+  id             Int     @id @default(autoincrement())
+  name           String? @unique
+  master_address String?
+  events         Event[]
+}
+
+model Event {
+  id    Int        @id @default(autoincrement())
+  event EventGroup @relation(fields: [id], references: [id])
   name  String?
+}
+
+model user {
+  id Int @id @default(autoincrement())
 }

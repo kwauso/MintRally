@@ -7,3 +7,10 @@ const connectionString = `${process.env["DATABASE_URL "]}`
 const pool = new Pool({ connectionString })
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
+
+
+export async function createEventGroup() {
+    await prisma.eventGroup.create({})
+}
+
+
