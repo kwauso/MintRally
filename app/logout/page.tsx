@@ -1,30 +1,24 @@
 // app/components/navi.tsx
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
+const LogoutPage: React.FC = () => {
+    const { isLoggedIn, logout } = useAuth();
 
-const Logout: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    useEffect(() => {
+        if (isLoggedIn) {
+            logout();
+            alert("ログアウトしました");
+            window.location.href = "/";
+        } else {
+            alert("ログインしていません");
+            window.location.href = "/";
+        }
+    }, [logout]);
 
-    const handleLogout = () => {
-        localStorage.removeItem("token"); // トークンを削除
-        alert("ログアウトしました");
-        window.location.reload(); // ページをリロードしてログイン状態を更新
-    };
-
-    return (
-        <nav>
-            <h1>ログアウト</h1>
-            {!isLoggedIn ? (
-                <button onClick={handleLogout}>ログアウト</button> // ログアウトボタン
-            ) : (
-                <button onClick={() => setIsModalOpen(true)}>ログイン</button> // ログインボタン
-            )}
-            {/* モーダルの表示 */}
-        </nav>
-    );
+    return null;
 };
 
-export default Logout;
+export default LogoutPage;
