@@ -11,13 +11,13 @@ export async function POST(request: Request) {
     // ユーザーをデータベースから取得
     const user = await prisma.user.findUnique({ where: { name } });
     if (!user) {
-        return NextResponse.json({ error: 'ユーザーが見つかりません' }, { status: 400 });
+        return NextResponse.json({ error: 'ユーザーまたはパスワードが無効です' }, { status: 400 });
     }
 
     // パスワードの検証
     const isPasswordValid = await bcrypt.compare(pass, user.pass || '');
     if (!isPasswordValid) {
-        return NextResponse.json({ error: 'パスワードが無効です' }, { status: 400 });
+        return NextResponse.json({ error: 'ユーザーまたはパスワードが無効です' }, { status: 400 });
     }
 
     // JWTトークンの生成
