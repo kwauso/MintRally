@@ -159,3 +159,23 @@
     right: 10px; /* 右からの距離 */
     height: auto;
 }
+
+.popup-button {
+    width: 180px; /* ボタンの幅を設定 */
+    height: 40px; /* ボタンの高さを設定 */
+    border-radius: 15px; /* ボタンの角を丸くする */
+    background: #552306; /* ボタンの背景色 */
+    border: none; /* ボーダーをなしに */
+    color: #FFF; /* テキストの色 */
+    font-family: Inter; /* フォントファミリー */
+    font-size: 16px; /* フォントサイズ */
+    font-weight: 700; /* フォントの太さ */
+    line-height: normal; /* 行の高さ */
+    margin-left: 10px; /* ボタンの左マージン */
+    margin-top: 2.5px;
+    margin-bottom: 2.5px;
+}
+
+.popup-button:hover{
+    background-color: #EDF2F7;
+}
