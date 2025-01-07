@@ -1,14 +1,16 @@
 "use client"
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "../components/modal";
 
 const LoginPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [loginName, setLoginName] = useState("");
+    const [loginPassword, setLoginPassword] = useState("");
+    const [registerAddress, setRegisterAddress] = useState("");
+    const [registerPassword, setRegisterPassword] = useState("");
 
     useEffect(() => {
         setIsModalOpen(true);
@@ -17,18 +19,18 @@ const LoginPage = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch("/api/auth/login", {
+            const response = await fetch("/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ name: loginName, pass: loginPassword }),
             });
             const data = await response.json();
             if (response.ok) {
-                alert("ログイン成功: " + data.token);
+                localStorage.setItem("token", data.token);
+                alert("ログイン成功");
                 setIsModalOpen(false);
-                // トークンをローカルストレージに保存するなどの処理を行います
             } else {
                 alert("ログイン失敗: " + data.error);
             }
@@ -40,12 +42,12 @@ const LoginPage = () => {
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch("/api/auth/register", {
+            const response = await fetch("/api/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ name, address, pass: password }),
+                body: JSON.stringify({ name, address: registerAddress, pass: registerPassword }),
             });
             if (response.ok) {
                 alert("ユーザー登録成功");
@@ -65,17 +67,17 @@ const LoginPage = () => {
                 <h2>ログイン / ユーザー登録</h2>
                 <form onSubmit={handleLogin}>
                     <input
-                        type="email"
-                        placeholder="メールアドレス"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="text"
+                        placeholder="名前"
+                        value={loginName}
+                        onChange={(e) => setLoginName(e.target.value)}
                         required
                     />
                     <input
                         type="password"
                         placeholder="パスワード"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
                         required
                     />
                     <button type="submit">ログイン</button>
@@ -91,23 +93,16 @@ const LoginPage = () => {
                     />
                     <input
                         type="text"
-                        placeholder="住所"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="email"
-                        placeholder="メールアドレス"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="アドレス"
+                        value={registerAddress}
+                        onChange={(e) => setRegisterAddress(e.target.value)}
                         required
                     />
                     <input
                         type="password"
                         placeholder="パスワード"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={registerPassword}
+                        onChange={(e) => setRegisterPassword(e.target.value)}
                         required
                     />
                     <button type="submit">登録</button>
