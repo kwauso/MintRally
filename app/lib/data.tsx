@@ -6,7 +6,7 @@ import path from 'path'
 
 export async function createEventGroupPage(name: string, master_address: string, groupId: number) {
     try {
-        const dirPath = path.join(process.cwd(), 'app', 'event-groups', "list", groupId.toString())
+        const dirPath = path.join(process.cwd(), 'app', 'event-groups', "list", name)
         await fs.mkdir(dirPath, { recursive: true })
         
         const pageContent = `"use client"
