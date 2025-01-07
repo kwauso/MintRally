@@ -4,34 +4,39 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface AuthContextType {
     isLoggedIn: boolean;
-    login: (token: string) => void;
+    login: (account: string) => void;
     logout: () => void;
+    user: { account: string | null };
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState<{ account: string | null }>({ account: null });
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
+        const account = localStorage.getItem('account');
+        if (account) {
             setIsLoggedIn(true);
+            setUser({ account });
         }
     }, []);
 
-    const login = (token: string) => {
-        localStorage.setItem('token', token);
+    const login = (account: string) => {
+        localStorage.setItem('account', account);
         setIsLoggedIn(true);
+        setUser({ account });
     };
 
     const logout = () => {
-        localStorage.removeItem('token');
+        localStorage.removeItem('account');
         setIsLoggedIn(false);
+        setUser({ account: null });
     };
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+        <AuthContext.Provider value={{ isLoggedIn, login, logout, user }}>
             {children}
         </AuthContext.Provider>
     );

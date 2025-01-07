@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../components/modal";
 import ConnectButton from "../components/connectMetaMask";
+import { useAuth } from "../context/AuthContext";
 
 const LoginPage = () => {
-
+    const { login } = useAuth();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
@@ -38,8 +39,10 @@ const LoginPage = () => {
             const data = await response.json();
             if (data && data.token) {
                 localStorage.setItem("token", data.token);
+                login(loginName);
                 alert("ログイン成功");
                 setIsModalOpen(false);
+                window.location.href = "/";
             } else {
                 alert("ログイン失敗: 不明なエラー");
             }
@@ -59,8 +62,10 @@ const LoginPage = () => {
                 body: JSON.stringify({ name, address: registerAddress, pass: registerPassword }),
             });
             if (response.ok) {
+                login(name);
                 alert("ユーザー登録成功");
                 setIsModalOpen(false);
+                window.location.href = "/";
             } else {
                 const errorMessage = await response.json();
                 alert("登録失敗: " + errorMessage.error);
@@ -74,7 +79,7 @@ const LoginPage = () => {
         <div>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <h2>ログイン / ユーザー登録</h2>
-                <ConnectButton/ >
+                <ConnectButton />
                 <form onSubmit={handleLogin}>
                     <input
                         type="text"
