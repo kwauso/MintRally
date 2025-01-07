@@ -39,6 +39,9 @@ const modalStyles: { overlay: React.CSSProperties; modal: React.CSSProperties; c
         borderRadius: "8px",
         width: "300px",
         position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
     },
     closeButton: {
         position: "absolute",

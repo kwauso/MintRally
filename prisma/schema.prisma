@@ -16,16 +16,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model EventGroup {
+model eventgroup {
   id             Int     @id @default(autoincrement())
   name           String? @unique
   master_address String?
-  events         Event[]
+  events         event[]
 }
 
-model Event {
+model event {
   id    Int        @id @default(autoincrement())
-  event EventGroup @relation(fields: [id], references: [id])
+  event eventgroup @relation(fields: [id], references: [id])
   name  String?
 }
 

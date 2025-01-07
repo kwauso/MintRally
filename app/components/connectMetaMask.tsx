@@ -26,7 +26,7 @@ const ConnectButton: React.FC = () => {
     return (
         <div>
             {account ? (
-                <p>接続中: {account}</p>
+                <></>
             ) : (
                 <button onClick={connectWallet} className="popup-button">
                     🦊 MetaMaskに接続
