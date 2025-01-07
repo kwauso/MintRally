@@ -9,11 +9,11 @@ const LoginPage = () => {
     const { login } = useAuth();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [name, setName] = useState("");
-    const [address, setAddress] = useState("");
     const [loginName, setLoginName] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
     const [registerAddress, setRegisterAddress] = useState("");
     const [registerPassword, setRegisterPassword] = useState("");
+    const [activeTab, setActiveTab] = useState("login"); // login または register
 
     useEffect(() => {
         setIsModalOpen(true);
@@ -78,50 +78,96 @@ const LoginPage = () => {
     return (
         <div>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <h2>ログイン / ユーザー登録</h2>
-                <ConnectButton />
-                <form onSubmit={handleLogin}>
-                    <input
-                        type="text"
-                        placeholder="名前"
-                        value={loginName}
-                        onChange={(e) => setLoginName(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="パスワード"
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        required
-                    />
-                    <button type="submit">ログイン</button>
-                </form>
-                <form onSubmit={handleRegister}>
-                    <h3>新規登録</h3>
-                    <input
-                        type="text"
-                        placeholder="名前"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="text"
-                        placeholder="アドレス"
-                        value={registerAddress}
-                        onChange={(e) => setRegisterAddress(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="パスワード"
-                        value={registerPassword}
-                        onChange={(e) => setRegisterPassword(e.target.value)}
-                        required
-                    />
-                    <button type="submit">登録</button>
-                </form>
+                <div className="p-6">
+                    <h2 className="text-2xl font-bold mb-6 text-center">アカウント</h2>
+                    
+                    <div className="flex mb-6 border-b">
+                        <button
+                            className={`popup-button flex-1 pb-2 text-center ${
+                                activeTab === "login" 
+                                    ? "border-b-2 border-blue-500 text-blue-500" 
+                                    : "text-gray-500"
+                            }`}
+                            onClick={() => setActiveTab("login")}
+                        >
+                            ログイン
+                        </button>
+                        <button
+                            className={`popup-button flex-1 pb-2 text-center ${
+                                activeTab === "register" 
+                                    ? "border-b-2 border-blue-500 text-blue-500" 
+                                    : "text-gray-500"
+                            }`}
+                            onClick={() => setActiveTab("register")}
+                        >
+                            新規登録
+                        </button>
+                    </div>
+
+                    <div className="mb-6">
+                        <ConnectButton />
+                    </div>
+
+                    {activeTab === "login" ? (
+                        <form onSubmit={handleLogin} className="space-y-4">
+                            <input
+                                type="text"
+                                placeholder="名前"
+                                value={loginName}
+                                onChange={(e) => setLoginName(e.target.value)}
+                                className="w-full p-2 border rounded"
+                                required
+                            />
+                            <input
+                                type="password"
+                                placeholder="パスワード"
+                                value={loginPassword}
+                                onChange={(e) => setLoginPassword(e.target.value)}
+                                className="w-full p-2 border rounded"
+                                required
+                            />
+                            <button
+                                type="submit"
+                                className="popup-button"
+                            >
+                                ログイン
+                            </button>
+                        </form>
+                    ) : (
+                        <form onSubmit={handleRegister} className="space-y-4">
+                            <input
+                                type="text"
+                                placeholder="名前"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="w-full p-2 border rounded"
+                                required
+                            />
+                            <input
+                                type="text"
+                                placeholder="アドレス"
+                                value={registerAddress}
+                                onChange={(e) => setRegisterAddress(e.target.value)}
+                                className="w-full p-2 border rounded"
+                                required
+                            />
+                            <input
+                                type="password"
+                                placeholder="パスワード"
+                                value={registerPassword}
+                                onChange={(e) => setRegisterPassword(e.target.value)}
+                                className="w-full p-2 border rounded"
+                                required
+                            />
+                            <button
+                                type="submit"
+                                className="popup-button"
+                            >
+                                登録
+                            </button>
+                        </form>
+                    )}
+                </div>
             </Modal>
         </div>
     );
