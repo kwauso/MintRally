@@ -2,6 +2,8 @@
 "use client"
 
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+
 
 const Logout: React.FC<{ isLoggedIn: boolean }> = ({ isLoggedIn }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);

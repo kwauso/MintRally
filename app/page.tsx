@@ -1,10 +1,15 @@
+"use client"
+
+import React from "react";
+import { AuthProvider } from "./context/AuthContext";
+import { useAuth } from "./context/AuthContext";
 import Image from "next/image";
 import mainImage from "../public/main.webp"
 import feature1 from "../public/feature1.png"
 import feature2 from "../public/feature2.png"
 import feature3 from "../public/feature3.png"
 
-export default function Page() {
+const Page: React.FC = () =>  {
     
     return (
         <>
@@ -82,4 +87,11 @@ export default function Page() {
         </>);
 }
 
+const App: React.FC = () => (
+    <AuthProvider> {/* AuthProviderでアプリケーションをラップ */}
+        <Page />
+    </AuthProvider>
+);
+
+export default App;
 //<Link href={"/events"}>Event</Link>
