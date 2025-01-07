@@ -76,12 +76,12 @@ const LoginPage = () => {
     };
 
     return (
-        <div>
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <div className="p-6">
+        <div className="flex items-center justify-center">
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} >
+                <div className="p-6 flex flex-col items-center justify-center w-full">
                     <h2 className="text-2xl font-bold mb-6 text-center">アカウント</h2>
                     
-                    <div className="flex mb-6 border-b">
+                    <div className="flex mb-6 border-b w-full justify-center">
                         <button
                             className={`popup-button flex-1 pb-2 text-center ${
                                 activeTab === "login" 
@@ -104,67 +104,81 @@ const LoginPage = () => {
                         </button>
                     </div>
 
-                    <div className="mb-6">
+                    <div className="mb-6 flex justify-center">
                         <ConnectButton />
                     </div>
 
                     {activeTab === "login" ? (
-                        <form onSubmit={handleLogin} className="space-y-4">
-                            <input
-                                type="text"
-                                placeholder="名前"
-                                value={loginName}
-                                onChange={(e) => setLoginName(e.target.value)}
-                                className="w-full p-2 border rounded"
-                                required
-                            />
-                            <input
-                                type="password"
-                                placeholder="パスワード"
-                                value={loginPassword}
-                                onChange={(e) => setLoginPassword(e.target.value)}
-                                className="w-full p-2 border rounded"
-                                required
-                            />
-                            <button
-                                type="submit"
-                                className="popup-button"
-                            >
-                                ログイン
-                            </button>
+                        <form onSubmit={handleLogin} className="space-y-4 w-full flex flex-col items-center">
+                            <div className="w-full flex justify-center">
+                                <input
+                                    type="text"
+                                    placeholder="名前"
+                                    value={loginName}
+                                    onChange={(e) => setLoginName(e.target.value)}
+                                    className="w-full max-w-md p-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="w-full flex justify-center">
+                                <input
+                                    type="password"
+                                    placeholder="パスワード"
+                                    value={loginPassword}
+                                    onChange={(e) => setLoginPassword(e.target.value)}
+                                    className="w-full max-w-md p-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="w-full flex justify-center">
+                                <button
+                                    type="submit"
+                                    className="popup-button"
+                                >
+                                    ログイン
+                                </button>
+                            </div>
                         </form>
                     ) : (
-                        <form onSubmit={handleRegister} className="space-y-4">
-                            <input
-                                type="text"
-                                placeholder="名前"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="w-full p-2 border rounded"
-                                required
-                            />
-                            <input
-                                type="text"
-                                placeholder="アドレス"
-                                value={registerAddress}
-                                onChange={(e) => setRegisterAddress(e.target.value)}
-                                className="w-full p-2 border rounded"
-                                required
-                            />
-                            <input
-                                type="password"
-                                placeholder="パスワード"
-                                value={registerPassword}
-                                onChange={(e) => setRegisterPassword(e.target.value)}
-                                className="w-full p-2 border rounded"
-                                required
-                            />
-                            <button
-                                type="submit"
-                                className="popup-button"
-                            >
-                                登録
-                            </button>
+                        <form onSubmit={handleRegister} className="space-y-4 w-full flex flex-col items-center">
+                            <div className="w-full flex justify-center">
+                                <input
+                                    type="text"
+                                    placeholder="名前"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="w-full max-w-md p-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="w-full flex justify-center">
+                                <input
+                                    type="text"
+                                    placeholder="アドレス"
+                                    value={registerAddress}
+                                    onChange={(e) => setRegisterAddress(e.target.value)}
+                                    className="w-full max-w-md p-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="w-full flex justify-center">
+                                <input
+                                    type="password"
+                                    placeholder="パスワード"
+                                    value={registerPassword}
+                                    onChange={(e) => setRegisterPassword(e.target.value)}
+                                    className="w-full max-w-md p-2 border rounded"
+                                    required
+                                />
+                            </div>
+                            <div className="w-full flex justify-center">
+                                <button
+                                    type="submit"
+                                    className="popup-button"
+                                >
+                                    登録
+                                </button>
+                            </div>
                         </form>
                     )}
                 </div>
