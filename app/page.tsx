@@ -5,6 +5,7 @@ import feature2 from "../public/feature2.png"
 import feature3 from "../public/feature3.png"
 
 export default function Page() {
+    
     return (
         <>
             <Image 

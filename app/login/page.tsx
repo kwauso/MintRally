@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "../components/modal";
 
 const LoginPage = () => {
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
@@ -26,13 +27,20 @@ const LoginPage = () => {
                 },
                 body: JSON.stringify({ name: loginName, pass: loginPassword }),
             });
+
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                alert("ログイン失敗: " + errorMessage);
+                return;
+            }
+
             const data = await response.json();
-            if (response.ok) {
+            if (data && data.token) {
                 localStorage.setItem("token", data.token);
                 alert("ログイン成功");
                 setIsModalOpen(false);
             } else {
-                alert("ログイン失敗: " + data.error);
+                alert("ログイン失敗: 不明なエラー");
             }
         } catch (error) {
             alert("エラーが発生しました: " + error.message);
