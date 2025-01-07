@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link";
+import { useAuth } from "../../context/AuthContext";
 
 const links = [
     {name: "Home", href: "/"},
@@ -8,6 +11,7 @@ const links = [
 ]
 
 export default function Navi() {
+    const {isLoggedIn, logout} = useAuth();
     return(
         <>
             {links.map((link) => {
@@ -22,12 +26,22 @@ export default function Navi() {
                 );
             })}
             <div className="login-container">
+                {!isLoggedIn ? (
+                    <></>
+                ) : (
                 <Link href="/logout">
                     <button className="login-button">ログアウト</button>
                 </Link>
-                <Link href="/login">
-                    <button className="login-button">ログイン</button>
+                )}
+                {!isLoggedIn ? (
+                    <Link href="/login">
+                        <button className="login-button">ログイン</button>
+                    </Link>
+                ) : (
+                <Link href="/mypage">
+                    <button className="login-button">マイページ</button>
                 </Link>
+                )}
             </div>
         </>);
 }
