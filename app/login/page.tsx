@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Modal from "../components/modal";
+import ConnectButton from "../components/connectMetaMask";
 
 const LoginPage = () => {
 
@@ -73,6 +74,7 @@ const LoginPage = () => {
         <div>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <h2>ログイン / ユーザー登録</h2>
+                <ConnectButton/ >
                 <form onSubmit={handleLogin}>
                     <input
                         type="text"
