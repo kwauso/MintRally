@@ -4,7 +4,7 @@ const links = [
     {name: "Home", href: "/"},
     {name: "Event", href:"/events"},
     {name: "Groups", href: "/event-groups"},
-    {name: "Help", href: "/help"}
+    {name: "Help", href: "/help"},
 ]
 
 export default function Navi() {
@@ -21,5 +21,11 @@ export default function Navi() {
                     </div>
                 );
             })}
+            <div className="login-container">
+                    <button className="login-button">ログアウト</button>
+                <Link href="/login">
+                    <button className="login-button">ログイン</button>
+                </Link>
+            </div>
         </>);
 }

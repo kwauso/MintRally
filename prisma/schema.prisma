@@ -31,4 +31,6 @@ model Event {
 
 model user {
   id Int @id @default(autoincrement())
+  name String? @unique
+  address String? @unique
 }
