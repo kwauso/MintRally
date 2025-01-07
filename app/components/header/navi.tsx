@@ -22,7 +22,9 @@ export default function Navi() {
                 );
             })}
             <div className="login-container">
+                <Link href="/logout">
                     <button className="login-button">ログアウト</button>
+                </Link>
                 <Link href="/login">
                     <button className="login-button">ログイン</button>
                 </Link>
