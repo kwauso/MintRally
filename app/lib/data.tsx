@@ -43,13 +43,11 @@ export default function ${name.replace(/[^a-zA-Z0-9]/g, '')}Page() {
                 <p className="text-gray-600 mb-4">
                     マスターアドレス: ${master_address}
                 </p>
-                {user?.account === "${master_address}" && (
-                    <div className="mt-4">
-                        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                            イベントを追加
-                        </button>
-                    </div>
-                )}
+                <div className="mt-4">
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        イベントを追加
+                    </button>
+                </div>
             </div>
         </div>
     )
