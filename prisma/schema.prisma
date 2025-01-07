@@ -24,9 +24,14 @@ model eventgroup {
 }
 
 model event {
-  id    Int        @id @default(autoincrement())
-  event eventgroup @relation(fields: [id], references: [id])
-  name  String?
+  id              Int        @id @default(autoincrement())
+  eventGroupId    Int        // 外部キーとして使用
+  eventGroup      eventgroup @relation(fields: [eventGroupId], references: [id])
+  name            String?
+  description     String
+  date            DateTime
+  pass            String?
+  creator_address String?
 }
 
 model user {

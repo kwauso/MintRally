@@ -1,22 +1,38 @@
-import { PrismaClient } from '@prisma/client'
+import { createEvent } from '../../lib/data'
 import { NextResponse } from 'next/server'
 
-const prisma = new PrismaClient()
-
-// イベントの作成
 export async function POST(request: Request) {
     try {
-        const { name, eventGroupId } = await request.json()
-        const event = await prisma.event.create({
-            data: {
-                name,
-                event: {
-                    connect: { id: eventGroupId }
-                }
-            }
+        const body = await request.json()
+        console.log('受信したイベントデータ:', body)
+
+        if (!body.name || !body.eventGroupId || !body.creator_address) {
+            return NextResponse.json({
+                success: false,
+                message: 'イベント名、グループID、作成者アドレスは必須です'
+            }, { status: 400 })
+        }
+
+        const result = await createEvent(
+            body.name,
+            body.eventGroupId,
+            body.creator_address,
+            body.description || '',
+            body.date || null,
+            body.pass || ''
+        )
+
+        return NextResponse.json({
+            success: true,
+            data: result
         })
-        return NextResponse.json(event)
+
     } catch (error) {
-        return NextResponse.json({ error: 'イベントの作成に失敗しました' }, { status: 500 })
+        console.error('APIエラー:', error)
+        return NextResponse.json({
+            success: false,
+            message: 'イベントの作成に失敗しました',
+            error: (error as Error).message
+        }, { status: 500 })
     }
 }
