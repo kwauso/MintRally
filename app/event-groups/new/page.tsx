@@ -2,52 +2,25 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '../../context/AuthContext'
 
 export default function CreateEventGroup() {
     const [name, setName] = useState('')
-    const [address, setAddress] = useState<string | null>(null)
     const router = useRouter()
+    const { user } = useAuth()
 
     useEffect(() => {
-        checkWalletConnection()
-    }, [])
-
-    const checkWalletConnection = async () => {
-        if (typeof window.ethereum !== 'undefined') {
-            try {
-                const accounts = await window.ethereum.request({ 
-                    method: 'eth_accounts' 
-                })
-                if (accounts.length > 0) {
-                    setAddress(accounts[0])
-                }
-            } catch (error) {
-                console.error('Error checking wallet connection:', error)
-            }
+        if (!user) {
+            router.push('/login')
         }
-    }
-
-    const connectWallet = async () => {
-        if (typeof window.ethereum !== 'undefined') {
-            try {
-                const accounts = await window.ethereum.request({ 
-                    method: 'eth_requestAccounts' 
-                })
-                setAddress(accounts[0])
-            } catch (error) {
-                console.error('Error connecting to MetaMask:', error)
-                alert('MetaMaskへの接続に失敗しました')
-            }
-        } else {
-            alert('MetaMaskをインストールしてください')
-        }
-    }
+    }, [user])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         
-        if (!address) {
-            alert('MetaMaskに接続してください')
+        if (!user || !user.account) {
+            alert('ログインしてください')
+            router.push('/login')
             return
         }
 
@@ -59,7 +32,7 @@ export default function CreateEventGroup() {
                 },
                 body: JSON.stringify({
                     name,
-                    master_address: address,
+                    master_address: user.account,
                 }),
             })
 
@@ -72,8 +45,12 @@ export default function CreateEventGroup() {
             router.refresh()
         } catch (error) {
             console.error('Error:', error)
-            alert('エラーが発生しました: ' + error.message)
+            alert('エラーが発生しました: ' + (error as Error).message)
         }
+    }
+
+    if (!user) {
+        return <div>ログインが必要です...</div>
     }
 
     return (
@@ -81,44 +58,35 @@ export default function CreateEventGroup() {
             <h1 className="create-group-title">新規イベントグループの作成</h1>
             
             <div className="create-group-form">
-                {!address ? (
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="name" className="form-label">
+                            グループ名
+                        </label>
+                        <input
+                            id="name"
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="form-input"
+                            required
+                            placeholder="グループ名を入力してください"
+                        />
+                    </div>
+
+                    <div className="wallet-info">
+                        <div className="wallet-label">🦊アドレス:</div>
+                        <div className="wallet-address">{user.account}</div>
+                    </div>
+
                     <button 
-                        onClick={connectWallet}
-                        className="connect-wallet-button"
+                        type="submit" 
+                        className="submit-button"
+                        disabled={!name.trim()}
                     >
-                        MetaMaskに接続
+                        作成
                     </button>
-                ) : (
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label htmlFor="name" className="form-label">
-                                グループ名
-                            </label>
-                            <input
-                                id="name"
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="form-input"
-                                required
-                                placeholder="グループ名を入力してください"
-                            />
-                        </div>
-
-                        <div className="wallet-info">
-                            <div className="wallet-label">🦊アドレス:</div>
-                            <div className="wallet-address">{address}</div>
-                        </div>
-
-                        <button 
-                            type="submit" 
-                            className="submit-button"
-                            disabled={!name.trim()}
-                        >
-                            作成
-                        </button>
-                    </form>
-                )}
+                </form>
             </div>
         </div>
     )
