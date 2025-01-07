@@ -81,7 +81,7 @@ export default function EventGroupsPage() {
                         {row.map((group) => (
                             <Link 
                                 key={group.id} 
-                                href={`/event-groups/${group.name}`}
+                                href={`/event-groups/list/${group.name}`}
                                 className="event-group-card"
                             >
                                 <h2 className="event-group-name">
