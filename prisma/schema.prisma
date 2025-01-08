@@ -30,8 +30,11 @@ model event {
   name            String?
   description     String
   date            DateTime
-  pass            String?
+  pass            String?    // 既存のpassフィールドをNFT用に活用
   creator_address String?
+  nftEnabled      Boolean    @default(false)  // NFT機能の有効/無効フラグ
+  nftTokenURI     String?    // NFTのメタデータURI（オプショナル）
+  nfts            NFT[]      // NFTとの関連
 }
 
 model user {
@@ -39,4 +42,14 @@ model user {
   name String? @unique
   address String? @unique
   pass String?
+}
+
+model NFT {
+  id          Int      @id @default(autoincrement())
+  tokenId     Int      @unique
+  eventId     Int
+  owner       String   // アドレス
+  tokenURI    String
+  createdAt   DateTime @default(now())
+  event       event    @relation(fields: [eventId], references: [id])
 }

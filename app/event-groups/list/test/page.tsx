@@ -33,10 +33,10 @@ export default function testPage() {
                     マスターアドレス: 0x54c6535c32d7406a28abba9a6abfbfa37405e2c5
                 </p>
                 {isOwner && (
-                    <div className="mt-4">
+                    <div className="mb-6">
                         <Link 
                             href={`/event/new?groupId=1`}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors inline-block"
                         >
                             イベントを作成
                         </Link>

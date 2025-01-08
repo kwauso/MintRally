@@ -43,34 +43,53 @@ export default function EventList() {
     }
 
     if (loading) {
-        return <div className="container mx-auto p-4">読み込み中...</div>
+        return (
+            <div className="loading-container">
+                <div className="loading-text">読み込み中...</div>
+            </div>
+        )
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">イベント一覧</h1>
+        <div className="event-container">
+            <div className="event-content">
+                <div className="event-header">
+                    <h1 className="event-title">イベント一覧</h1>
+                </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {events.map((event) => (
-                    <div key={event.id} className="bg-white shadow rounded-lg p-6">
-                        <h2 className="text-xl font-semibold mb-2">{event.name}</h2>
-                        <p className="text-gray-600 mb-4">{event.description}</p>
-                        <div className="text-sm text-gray-500 mb-2">
-                            開催日時: {new Date(event.date).toLocaleString()}
+                <div className="event-list-container">
+                    {events && events.length > 0 ? (
+                        <div className="event-list">
+                            {events.map((event) => (
+                                <div key={event.id} className="event-card">
+                                    <div className="event-card-content">
+                                        <div className="event-info">
+                                            <h2 className="event-name">{event.name}</h2>
+                                            <p className="event-description">{event.description}</p>
+                                            <div className="event-meta">
+                                                <p className="event-meta-item">
+                                                    📅 開催日時: {new Date(event.date).toLocaleString()}
+                                                </p>
+                                                <p className="event-meta-item">
+                                                    📁 グループ: {event.eventGroup.name}
+                                                </p>
+                                                <p className="event-meta-item">
+                                                    👤 作成者: {event.creator_address}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <div className="text-sm text-gray-500 mb-4">
-                            グループ: {event.eventGroup.name}
+                    ) : (
+                        <div className="empty-message">
+                            <p className="empty-text">
+                                イベントはありません
+                            </p>
                         </div>
-                        <div className="text-xs text-gray-400 truncate">
-                            作成者: {event.creator_address}
-                        </div>
-                    </div>
-                ))}
-                {events.length === 0 && (
-                    <div className="col-span-full text-center text-gray-500">
-                        イベントがありません
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     )
