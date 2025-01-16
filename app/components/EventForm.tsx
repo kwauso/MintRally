@@ -2,202 +2,145 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { uploadToLighthouse, mintNFT } from '../../blockchain/utils/lighthouse'
 
-type EventFormProps = {
-    initialData?: {
-        name: string;
-        description: string;
-        date: string;
-        pass?: string;
-        nftEnabled: boolean;
-    };
+export default function EventForm({ 
+    eventGroupId, 
+    onSubmit 
+}: { 
     eventGroupId: number;
-    onSubmit: (data: FormData) => void;
-};
+    onSubmit: (formData: FormData) => Promise<void>;
+}) {
+    const [loading, setLoading] = useState(false)
+    const [nftEnabled, setNftEnabled] = useState(false)
+    const [nftImageFile, setNftImageFile] = useState<File | null>(null)
 
-export default function EventForm({ initialData, eventGroupId, onSubmit }: EventFormProps) {
-    const [formData, setFormData] = useState({
-        name: initialData?.name || '',
-        description: initialData?.description || '',
-        date: initialData?.date || '',
-        pass: initialData?.pass || '',
-        nftEnabled: initialData?.nftEnabled || false
-    });
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        setLoading(true)
 
-    const [nftImageFile, setNftImageFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string>('');
+        try {
+            const formData = new FormData(e.currentTarget)
+            formData.append('eventGroupId', eventGroupId.toString())
+            formData.append('nftEnabled', nftEnabled.toString())
+            
+            if (nftEnabled && nftImageFile) {
+                formData.append('nftImageFile', nftImageFile)
+            }
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-        }));
-    };
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setNftImageFile(file);
-            setPreviewUrl(URL.createObjectURL(file));
+            await onSubmit(formData)
+        } catch (error) {
+            console.error('Form submission error:', error)
+            alert('エラーが発生しました: ' + (error as Error).message)
+        } finally {
+            setLoading(false)
         }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        const formDataToSubmit = new FormData();
-
-        formDataToSubmit.append('name', formData.name);
-        formDataToSubmit.append('description', formData.description);
-        formDataToSubmit.append('date', formData.date);
-        formDataToSubmit.append('eventGroupId', eventGroupId.toString());
-        formDataToSubmit.append('nftEnabled', formData.nftEnabled.toString());
-
-        if (formData.nftEnabled && formData.pass) {
-            formDataToSubmit.append('pass', formData.pass);
-        }
-
-        if (formData.nftEnabled && nftImageFile) {
-            formDataToSubmit.append('nftImageFile', nftImageFile);
-        }
-
-        console.log('Submitting form data:', {
-            name: formData.name,
-            description: formData.description,
-            date: formData.date,
-            eventGroupId: eventGroupId,
-            nftEnabled: formData.nftEnabled,
-            hasPass: !!formData.pass,
-            hasImage: !!nftImageFile
-        });
-
-        onSubmit(formDataToSubmit);
-    };
-
-    const inputClassName = `
-        w-full 
-        px-15 
-        py-6 
-        bg-white 
-        border-2 
-        border-gray-100 
-        rounded-3xl 
-        focus:ring-2 
-        focus:ring-blue-500
-        focus:border-transparent 
-        transition-all 
-        duration-200 
-        ease-in-out 
-        hover:border-gray-200 
-        placeholder-gray-400 
-        text-gray-600 
-        text-xl 
-        shadow-sm 
-        outline-none
-        min-w-[500px]
-    `
+    }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-12 w-full max-w-4xl mx-auto">
+        <form onSubmit={handleSubmit} className="space-y-8">
             <div className="form-group">
-                <label htmlFor="name" className="block text-xl font-medium text-gray-700 mb-4 ml-3">
+                <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
                     イベント名
                 </label>
                 <input
                     id="name"
                     name="name"
                     type="text"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className={inputClassName}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ease-in-out hover:bg-gray-100 placeholder-gray-400"
                     required
-                    placeholder=""
+                    placeholder="例: Web3カンファレンス2024"
                 />
             </div>
 
             <div className="form-group">
-                <label htmlFor="description" className="block text-xl font-medium text-gray-700 mb-4 ml-3">
+                <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
                     説明
                 </label>
                 <textarea
                     id="description"
                     name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    className={`${inputClassName} min-h-[240px] resize-y`}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ease-in-out hover:bg-gray-100 placeholder-gray-400 min-h-[120px] resize-y"
                     required
-                    placeholder="イベントの説明を入力"
+                    placeholder="イベントの詳細な説明を入力してください"
                 />
             </div>
 
             <div className="form-group">
-                <label htmlFor="date" className="block text-xl font-medium text-gray-700 mb-4 ml-3">
+                <label htmlFor="date" className="block text-sm font-semibold text-gray-700 mb-2">
                     開催日時
                 </label>
                 <input
                     id="date"
                     name="date"
                     type="datetime-local"
-                    value={formData.date}
-                    onChange={handleChange}
-                    className={inputClassName}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ease-in-out hover:bg-gray-100"
                     required
                 />
             </div>
 
             <div className="form-group">
-                <label className="flex items-center space-x-4 p-8 bg-white border-2 border-gray-100 rounded-3xl hover:border-gray-200 transition-all duration-200 cursor-pointer shadow-sm">
+                <label className="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all duration-200 cursor-pointer">
                     <input
                         type="checkbox"
-                        name="nftEnabled"
-                        checked={formData.nftEnabled}
-                        onChange={handleChange}
-                        className="h-8 w-8 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-xl transition-all duration-200"
+                        checked={nftEnabled}
+                        onChange={(e) => setNftEnabled(e.target.checked)}
+                        className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-md transition-all duration-200"
                     />
-                    <span className="text-xl font-medium text-gray-700">NFTを有効にする</span>
+                    <span className="text-sm font-semibold text-gray-700">NFTを有効にする</span>
                 </label>
             </div>
 
-            {formData.nftEnabled && (
-                <div className="space-y-10 border-t-2 border-gray-100 pt-12">
+            {nftEnabled && (
+                <div className="space-y-6 border-t border-gray-200 pt-6">
                     <div className="form-group">
-                        <label htmlFor="pass" className="block text-xl font-medium text-gray-700 mb-4 ml-3">
+                        <label htmlFor="pass" className="block text-sm font-semibold text-gray-700 mb-2">
                             NFT取得用パスワード
                         </label>
                         <input
                             id="pass"
                             name="pass"
                             type="password"
-                            value={formData.pass}
-                            onChange={handleChange}
-                            className={inputClassName}
-                            required={formData.nftEnabled}
-                            placeholder="パスワードを設定"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ease-in-out hover:bg-gray-100 placeholder-gray-400"
+                            required={nftEnabled}
+                            placeholder="安全なパスワードを設定してください"
                         />
                     </div>
 
                     <div className="form-group">
-                        <label className="block text-xl font-medium text-gray-700 mb-4 ml-3">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                             NFT画像
                         </label>
-                        <div className="w-full">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="w-full text-xl text-gray-600 file:mr-4 file:py-5 file:px-10 file:rounded-3xl file:border-0 file:text-xl file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:transition-all file:duration-200"
-                                required={formData.nftEnabled}
-                            />
+                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-gray-400 transition-all duration-200">
+                            <div className="space-y-1 text-center">
+                                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <div className="flex text-sm text-gray-600">
+                                    <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                        <span>画像をアップロード</span>
+                                        <input
+                                            id="file-upload"
+                                            name="file-upload"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => setNftImageFile(e.target.files?.[0] || null)}
+                                            className="sr-only"
+                                            required={nftEnabled}
+                                        />
+                                    </label>
+                                </div>
+                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                            </div>
                         </div>
-                        {previewUrl && (
-                            <div className="mt-8">
+                        {nftImageFile && (
+                            <div className="mt-4">
                                 <Image
-                                    src={previewUrl}
+                                    src={URL.createObjectURL(nftImageFile)}
                                     alt="NFT preview"
-                                    width={400}
-                                    height={400}
-                                    className="rounded-3xl object-cover shadow-md"
+                                    width={200}
+                                    height={200}
+                                    className="rounded-xl object-cover"
                                 />
                             </div>
                         )}
@@ -205,15 +148,15 @@ export default function EventForm({ initialData, eventGroupId, onSubmit }: Event
                 </div>
             )}
 
-            <div className="form-group mt-14">
+            <div className="form-group mt-8">
                 <button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-2xl font-medium px-10 py-8 rounded-3xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-                    disabled={!formData.name.trim()}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white text-lg font-semibold px-6 py-4 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                    disabled={loading}
                 >
-                    {initialData ? '更新する' : 'イベントを作成'}
+                    {loading ? '作成中...' : 'イベントを作成'}
                 </button>
             </div>
         </form>
-    );
+    )
 }

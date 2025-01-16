@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useAuth } from '../../../app/context/AuthContext'
 import EventForm from '../../../app/components/EventForm'
+import { mintNFT } from '../../../blockchain/utils/lighthouse'
 
 type APIResponse = {
     success: boolean;
@@ -48,6 +49,9 @@ export default function CreateEvent(): React.ReactElement {
         }
 
         try {
+            const nftEnabled = formData.get('nftEnabled') === 'true'
+            const nftImageFile = formData.get('nftImageFile') as File | null
+
             formData.append('creator_address', user.account)
 
             const response = await fetch('/api/event', {
@@ -60,16 +64,29 @@ export default function CreateEvent(): React.ReactElement {
                 throw new Error(`APIエラー: ${response.status} ${errorText}`)
             }
 
-            const result = await response.json()
+            const result = await response.json() as APIResponse
+
+            if (nftEnabled && nftImageFile && result.data?.event?.id) {
+                try {
+                    await mintNFT(
+                        result.data.event.id,
+                        nftImageFile,
+                        formData.get('name') as string,
+                        formData.get('description') as string,
+                        user.account
+                    )
+                    console.log('NFT setup completed')
+                } catch (error) {
+                    console.error('NFT setup error:', error)
+                    alert('NFTの設定に失敗しました: ' + (error as Error).message)
+                }
+            }
+
             if (!result.success) {
                 throw new Error(result.message || '不明なエラーが発生しました')
             }
 
-            if (!result.data?.event?.eventGroup?.name) {
-                throw new Error('イベントグループ名の取得に失敗しました')
-            }
-
-            router.push(`/event-groups/list/${result.data.event.eventGroup.name}`)
+            router.push(`/event-groups/${result.data?.event.eventGroupId}`)
             router.refresh()
         } catch (error) {
             console.error('Error:', error)

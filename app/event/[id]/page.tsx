@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '../../../app/context/AuthContext'
 import Link from 'next/link'
+import { claimEventNFT } from '../../../blockchain/utils/lighthouse'
 
 type Event = {
     id: number
@@ -24,6 +25,7 @@ export default function EventDetail() {
     const { user } = useAuth()
     const [event, setEvent] = useState<Event | null>(null)
     const [loading, setLoading] = useState(true)
+    const [claimingNFT, setClaimingNFT] = useState(false)
 
     useEffect(() => {
         fetchEvent()
@@ -44,6 +46,22 @@ export default function EventDetail() {
             router.push('/event-groups')
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleClaimNFT = async () => {
+        if (!event || !user) return
+
+        setClaimingNFT(true)
+        try {
+            const result = await claimEventNFT(event.id)
+            alert('NFTの取得に成功しました！')
+            console.log('NFT claim result:', result)
+        } catch (error) {
+            console.error('NFT claim error:', error)
+            alert('NFTの取得に失敗しました: ' + (error as Error).message)
+        } finally {
+            setClaimingNFT(false)
         }
     }
 
@@ -117,13 +135,14 @@ export default function EventDetail() {
                         </div>
                     </div>
 
-                    {user && event.nftEnabled && (
-                        <div className="pt-4">
-                            <button 
-                                className="w-full bg-blue-600 text-white px-8 py-4 rounded-2xl hover:bg-blue-700 transition-colors duration-200 text-lg font-medium"
-                                onClick={() => {/* NFT取得処理 */}}
+                    {event?.nftEnabled && user && (
+                        <div className="mt-6">
+                            <button
+                                onClick={handleClaimNFT}
+                                disabled={claimingNFT}
+                                className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
                             >
-                                NFTを取得する
+                                {claimingNFT ? 'NFT取得中...' : 'NFTを取得する'}
                             </button>
                         </div>
                     )}
