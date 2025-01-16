@@ -12,7 +12,7 @@ export default function test4Page() {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const response = await fetch(`/api/eventGroup/5/events`)
+                const response = await fetch(`/api/eventGroup/4/events`)
                 const data = await response.json()
                 if (data.success) {
                     setEvents(data.events)
@@ -35,7 +35,7 @@ export default function test4Page() {
                 {isOwner && (
                     <div className="mb-6">
                         <Link 
-                            href={`/event/new?groupId=5`}
+                            href={`/event/new?groupId=4`}
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors inline-block"
                         >
                             イベントを作成
