@@ -67,87 +67,75 @@ export default function EventDetail() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[50vh]">
-                <div className="text-center text-gray-600 text-lg">
-                    読み込み中...
-                </div>
+            <div className="empty-container">
+                <div className="empty-text">読み込み中...</div>
             </div>
         )
     }
 
     if (!event) {
         return (
-            <div className="text-center py-12">
-                <p className="text-xl text-gray-600">
-                    イベントが見つかりませんでした
-                </p>
+            <div className="empty-container">
+                <div className="empty-text">イベントが見つかりませんでした</div>
             </div>
         )
     }
 
     return (
-        <>
-            <div className="flex justify-between items-center mb-8">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-bold text-gray-800">
+        <div className="events-container">
+            <div className="header-container">
+                <div>
+                    <Link 
+                        href={`/event-groups/${event.eventGroup.id}`}
+                        className="back-link"
+                    >
+                        イベントグループに戻る
+                    </Link>
+                    <h1 className="event-groups-title">
                         {event.name}
                     </h1>
                 </div>
             </div>
 
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-                <div className="p-8 space-y-8">
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-semibold text-gray-700">イベント詳細</h2>
-                        <h2 className="text-lg font-semibold text-gray-700">イベントグループ：
-                            <Link href={`/event-groups/${event.eventGroup.id}`}>
-                            {event.eventGroup.name}
-                            </Link>
-                            </h2>
-                        <p className="text-lg text-gray-600 leading-relaxed whitespace-pre-wrap">
-                            {event.description}
-                        </p>
+            <div className="events-list">
+                <div className="event-card">
+                    <div className="flex justify-between items-start gap-4 mb-4">
+                        <h2 className="text-xl font-semibold text-gray-800 flex-grow">
+                            イベント詳細
+                        </h2>
+                        {event.nftEnabled && (
+                            <span className="small-square">
+                                NFT対応
+                            </span>
+                        )}
                     </div>
 
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-semibold text-gray-700">開催情報</h2>
-                        <div className="bg-gray-50 rounded-2xl p-6 space-y-4">
-                            <div className="flex items-center space-x-2">
-                                <span className="text-lg">📅</span>
-                                <span className="text-lg text-gray-700">
-                                    {new Date(event.date).toLocaleString()}
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <span className="text-lg">👤</span>
-                                <span className="text-lg text-gray-700">
-                                    作成者: {event.creator_address}
-                                </span>
-                            </div>
-                            {event.nftEnabled && (
-                                <div className="flex items-center space-x-2">
-                                    <span className="text-lg">🎫</span>
-                                    <span className="text-lg text-gray-700">
-                                        NFT発行可能
-                                    </span>
-                                </div>
-                            )}
+                    <p className="text-gray-600 mb-6">
+                        {event.description || 'イベントの説明はありません'}
+                    </p>
+
+                    <div className="space-y-3 text-sm text-gray-500 border-t pt-4">
+                        <div className="flex items-center gap-3">
+                            <span className="text-gray-600">開催日時：</span>
+                            <span>
+                                {new Date(event.date).toLocaleString('ja-JP', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="text-gray-600">作成者：</span>
+                            <span className="font-mono">
+                                {event.creator_address}
+                            </span>
                         </div>
                     </div>
-
-                    {event?.nftEnabled && user && (
-                        <div className="mt-6">
-                            <button
-                                onClick={handleClaimNFT}
-                                disabled={claimingNFT}
-                                className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
-                            >
-                                {claimingNFT ? 'NFT取得中...' : 'NFTを取得する'}
-                            </button>
-                        </div>
-                    )}
                 </div>
             </div>
-        </>
+        </div>
     )
 }

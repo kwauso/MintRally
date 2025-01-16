@@ -44,61 +44,83 @@ export default function EventList() {
 
     if (loading) {
         return (
-            <div className="loading-container">
-                <div className="loading-text">読み込み中...</div>
+            <div className="empty-container">
+                <div className="empty-text">読み込み中...</div>
             </div>
         )
     }
 
     return (
-        <div className="event-container">
-            <div className="event-content">
-                <div className="event-header">
-                    <h1 className="event-title">イベント一覧</h1>
+        <div className="events-container">
+            <div className="header-container">
+                <div>
+                    <h1 className="event-groups-title">
+                        イベント一覧
+                    </h1>
                 </div>
+                {user && (
+                    <Link
+                        href="/event/new"
+                        className="new-group-link"
+                    >
+                        新規イベント作成
+                    </Link>
+                )}
+            </div>
 
-                <div className="event-list-container">
-                    {events && events.length > 0 ? (
-                        <div className="event-list">
-                            {events.map((event) => (
+            <div className="events-list">
+                {events.length > 0 ? (
+                    <div>
+                        {events.map((event) => (
+                            <div key={event.id} className="w-full">
                                 <Link 
-                                    key={event.id}
                                     href={`/event/${event.id}`}
-                                    className="block bg-white border-2 border-gray-100 rounded-3xl p-8 hover:border-gray-200 transition-all duration-200 shadow-sm"
+                                    className="block w-full h-full"
                                 >
-                                    <div className="space-y-4">
-                                        <h2 className="text-2xl font-semibold text-gray-800">
-                                            {event.name}
-                                        </h2>
-                                        <p className="text-lg text-gray-600 leading-relaxed">
-                                            {event.description}
+                                    <div className="event-card">
+                                        <div className="flex justify-between items-start gap-4 mb-4">
+                                            <h2 className="text-xl font-semibold text-gray-800 line-clamp-2 flex-grow">
+                                                {event.name}
+                                            </h2>
+
+                                        </div>
+
+                                        <p className="text-gray-600 mb-6 line-clamp-3">
+                                            {event.description || 'イベントの説明はありません'}
                                         </p>
-                                        <div className="flex flex-col space-y-2 text-gray-500">
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-lg">📅</span>
-                                                <span className="text-lg">
-                                                    {new Date(event.date).toLocaleString()}
+
+                                        <div className="space-y-3 text-sm text-gray-500 border-t pt-4">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-gray-600">開催日時：</span>
+                                                <span>
+                                                    {new Date(event.date).toLocaleString('ja-JP', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    })}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-lg">👤</span>
-                                                <span className="text-lg">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-gray-600">作成者：</span>
+                                                <span className="font-mono">
                                                     {event.creator_address}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                 </Link>
-                            ))}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="empty-container">
+                        <div className="empty-text">
+                            イベントはまだありません
                         </div>
-                    ) : (
-                        <div className="empty-message">
-                            <p className="empty-text">
-                                イベントはありません
-                            </p>
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         </div>
     )
