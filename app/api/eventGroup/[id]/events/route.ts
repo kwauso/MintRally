@@ -3,11 +3,13 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id = Number(params.id)
-        if (isNaN(id)) {
+        const { id } = await context.params;
+        const eventGroupId = Number(id);
+
+        if (isNaN(eventGroupId)) {
             return NextResponse.json({
                 success: false,
                 message: '無効なIDです'
@@ -16,7 +18,7 @@ export async function GET(
 
         const events = await prisma.event.findMany({
             where: {
-                eventGroupId: id
+                eventGroupId: eventGroupId
             },
             orderBy: {
                 date: 'desc'

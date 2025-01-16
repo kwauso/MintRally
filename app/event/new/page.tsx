@@ -1,9 +1,25 @@
 "use client"
 
-import React, { useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
 import { useAuth } from '../../../app/context/AuthContext'
 import EventForm from '../../../app/components/EventForm'
+
+type APIResponse = {
+    success: boolean;
+    message?: string;
+    data?: {
+        event: {
+            id: number;
+            eventGroupId: number;
+            eventGroup: {
+                id: number;
+                name: string;
+            };
+        };
+    };
+}
 
 export default function CreateEvent(): React.ReactElement {
     const router = useRouter()
@@ -22,7 +38,7 @@ export default function CreateEvent(): React.ReactElement {
             router.push('/event-groups')
             return
         }
-    }, [user, groupId])
+    }, [user, groupId, router])
 
     const handleSubmit = async (formData: FormData) => {
         if (!user || !user.account) {
@@ -44,12 +60,17 @@ export default function CreateEvent(): React.ReactElement {
                 throw new Error(`APIエラー: ${response.status} ${errorText}`)
             }
 
-            const result = await response.json()
+            const result: APIResponse = await response.json()
+            
             if (!result.success) {
-                throw new Error(result.message)
+                throw new Error(result.message || '不明なエラーが発生しました')
             }
 
-            router.push(`/event-groups/list/${result.data.eventGroup.name}`)
+            if (!result.data?.event?.eventGroup?.name) {
+                throw new Error('イベントグループ名の取得に失敗しました')
+            }
+
+            router.push(`/event-groups/list/${result.data.event.eventGroup.name}`)
             router.refresh()
         } catch (error) {
             console.error('Error:', error)
