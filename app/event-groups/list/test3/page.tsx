@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../../../../app/context/AuthContext'
 
-export default function test2Page() {
+export default function test3Page() {
     const { user } = useAuth()
     const isOwner = user?.account?.toLowerCase() === "0x54c6535c32d7406a28abba9a6abfbfa37405e2c5"
     const [events, setEvents] = useState([])
@@ -12,7 +12,7 @@ export default function test2Page() {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const response = await fetch(`/api/eventGroup/2/events`)
+                const response = await fetch(`/api/eventGroup/3/events`)
                 const data = await response.json()
                 if (data.success) {
                     setEvents(data.events)
@@ -27,7 +27,7 @@ export default function test2Page() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">test2</h1>
+            <h1 className="text-2xl font-bold mb-4">test3</h1>
             <div className="bg-white shadow rounded-lg p-6">
                 <p className="text-gray-600 mb-4">
                     マスターアドレス: 0x54c6535c32d7406a28abba9a6abfbfa37405e2c5
@@ -35,7 +35,7 @@ export default function test2Page() {
                 {isOwner && (
                     <div className="mb-6">
                         <Link 
-                            href={`/event/new?groupId=2`}
+                            href={`/event/new?groupId=3`}
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors inline-block"
                         >
                             イベントを作成

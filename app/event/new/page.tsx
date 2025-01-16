@@ -24,14 +24,7 @@ export default function CreateEvent(): React.ReactElement {
         }
     }, [user, groupId])
 
-    const handleSubmit = async (formData: {
-        name: string;
-        description: string;
-        date: string;
-        pass?: string;
-        nftEnabled: boolean;
-        eventGroupId: number;
-    }) => {
+    const handleSubmit = async (formData: FormData) => {
         if (!user || !user.account) {
             alert('ログインしてください')
             router.push('/login')
@@ -39,16 +32,11 @@ export default function CreateEvent(): React.ReactElement {
         }
 
         try {
+            formData.append('creator_address', user.account)
+
             const response = await fetch('/api/event', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    date: formData.date ? new Date(formData.date).toISOString() : null,
-                    creator_address: user.account,
-                }),
+                body: formData
             })
 
             if (!response.ok) {
