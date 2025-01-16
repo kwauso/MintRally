@@ -71,12 +71,6 @@ export default function EventDetail() {
         <>
             <div className="flex justify-between items-center mb-8">
                 <div className="space-y-1">
-                    <Link 
-                        href="/event-groups"
-                        className="text-blue-600 hover:text-blue-700 transition-colors duration-200 text-lg"
-                    >
-                        ← イベントグループ一覧に戻る
-                    </Link>
                     <h1 className="text-3xl font-bold text-gray-800">
                         {event.name}
                     </h1>
@@ -87,6 +81,11 @@ export default function EventDetail() {
                 <div className="p-8 space-y-8">
                     <div className="space-y-4">
                         <h2 className="text-xl font-semibold text-gray-700">イベント詳細</h2>
+                        <h2 className="text-lg font-semibold text-gray-700">イベントグループ：
+                            <Link href={`/event-groups/${event.eventGroup.id}`}>
+                            {event.eventGroup.name}
+                            </Link>
+                            </h2>
                         <p className="text-lg text-gray-600 leading-relaxed whitespace-pre-wrap">
                             {event.description}
                         </p>

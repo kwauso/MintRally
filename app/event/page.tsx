@@ -59,9 +59,10 @@ export default function EventList() {
 
                 <div className="event-list-container">
                     {events && events.length > 0 ? (
-                        <div className="event-list" key={events.length}>
+                        <div className="event-list">
                             {events.map((event) => (
                                 <Link 
+                                    key={event.id}
                                     href={`/event/${event.id}`}
                                     className="block bg-white border-2 border-gray-100 rounded-3xl p-8 hover:border-gray-200 transition-all duration-200 shadow-sm"
                                 >
