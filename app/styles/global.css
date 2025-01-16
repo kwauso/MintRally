@@ -479,3 +479,106 @@
     color: #6b7280;
     font-size: 1.125rem;
   }
+
+/* イベント一覧用の新しいスタイル */
+.events-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.events-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card {
+    /* 既存のスタイル */
+    border: 1px solid #e5e7eb;
+    transition: border-color 0.2s ease;
+}
+
+.card:hover {
+    border-color: #56F0DE;
+}
+
+.events-list a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* イベントグループ用のスタイル */
+.event-group-list a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.event-group-list .card {
+    width: 100%;
+    max-width: none;
+}
+/* 基本のカードスタイル */
+.base-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    transition: border-color 0.2s ease;
+}
+
+/* トップページ用のカード */
+.top-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    width: 30%;
+    position: relative;
+    margin: 0 10px;
+}
+
+/* イベント用のカード */
+.event-card {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    transition: border-color 0.2s ease;
+}
+
+.event-card:hover {
+    border-color: #56F0DE;
+}
+
+/* イベントグループ用のカード */
+.event-group-card {
+    flex: 1;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: block;
+    margin-right: auto;
+}
+
+.event-group-card:hover {
+    border-color: #56F0DE;
+}
+
+/* イベント一覧のリンクスタイル */
+.events-list a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+/* イベントグループ一覧のリンクスタイル */
+.event-groups-list a {
+    color: inherit;
+    text-decoration: none;
+}
