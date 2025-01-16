@@ -59,27 +59,35 @@ export default function EventList() {
 
                 <div className="event-list-container">
                     {events && events.length > 0 ? (
-                        <div className="event-list">
+                        <div className="event-list" key={events.length}>
                             {events.map((event) => (
-                                <div key={event.id} className="event-card">
-                                    <div className="event-card-content">
-                                        <div className="event-info">
-                                            <h2 className="event-name">{event.name}</h2>
-                                            <p className="event-description">{event.description}</p>
-                                            <div className="event-meta">
-                                                <p className="event-meta-item">
-                                                    📅 開催日時: {new Date(event.date).toLocaleString()}
-                                                </p>
-                                                <p className="event-meta-item">
-                                                    📁 グループ: {event.eventGroup.name}
-                                                </p>
-                                                <p className="event-meta-item">
-                                                    👤 作成者: {event.creator_address}
-                                                </p>
+                                <Link 
+                                    href={`/event/${event.id}`}
+                                    className="block bg-white border-2 border-gray-100 rounded-3xl p-8 hover:border-gray-200 transition-all duration-200 shadow-sm"
+                                >
+                                    <div className="space-y-4">
+                                        <h2 className="text-2xl font-semibold text-gray-800">
+                                            {event.name}
+                                        </h2>
+                                        <p className="text-lg text-gray-600 leading-relaxed">
+                                            {event.description}
+                                        </p>
+                                        <div className="flex flex-col space-y-2 text-gray-500">
+                                            <div className="flex items-center space-x-2">
+                                                <span className="text-lg">📅</span>
+                                                <span className="text-lg">
+                                                    {new Date(event.date).toLocaleString()}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <span className="text-lg">👤</span>
+                                                <span className="text-lg">
+                                                    {event.creator_address}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     ) : (
