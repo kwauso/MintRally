@@ -161,15 +161,11 @@ export default function EventDetail() {
                     </div>
 
                     {event.nftEnabled && user && user.account !== event.creator_address && (
-                        <div className="mt-6 pt-4 border-t">
+                        <div className="nft-claim-section">
                             <button
                                 onClick={handleClaimNFT}
                                 disabled={claimingNFT}
-                                className={`w-full py-2 px-4 rounded-lg font-medium ${
-                                    claimingNFT
-                                        ? 'bg-gray-300 cursor-not-allowed'
-                                        : 'bg-blue-600 hover:bg-blue-700 text-white'
-                                }`}
+                                className="nft-claim-button"
                             >
                                 {claimingNFT ? 'NFT受け取り中...' : 'NFTを受け取る'}
                             </button>
@@ -179,35 +175,33 @@ export default function EventDetail() {
             </div>
 
             {showPassModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4">
-                        <h3 className="text-lg font-semibold mb-4">あいことばを入力</h3>
+                <div className="modal-overlay">
+                    <div className="modal-container">
+                        <h3 className="modal-title">あいことばを入力</h3>
                         <input
                             type="password"
                             value={pass}
                             onChange={handlePassChange}
-                            className={`w-full px-3 py-2 border rounded-lg mb-2 ${
-                                passError ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                            className={`modal-input ${passError ? 'error' : ''}`}
                             placeholder="あいことばを入力してください"
                         />
                         {passError && (
-                            <p className="text-red-500 text-sm mb-4">{passError}</p>
+                            <p className="modal-error">{passError}</p>
                         )}
-                        <div className="flex justify-end gap-2 mt-4">
+                        <div className="modal-buttons">
                             <button
                                 onClick={() => {
                                     setShowPassModal(false)
                                     setPass('')
                                     setPassError('')
                                 }}
-                                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                                className="modal-button modal-button-cancel"
                             >
                                 キャンセル
                             </button>
                             <button
                                 onClick={handleClaimNFT}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                className="modal-button modal-button-confirm"
                             >
                                 確認
                             </button>
