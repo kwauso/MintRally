@@ -10,10 +10,8 @@ const LogoutPage: React.FC = () => {
     useEffect(() => {
         if (isLoggedIn) {
             logout();
-            alert("ログアウトしました");
             window.location.href = "/";
         } else {
-            alert("ログインしていません");
             window.location.href = "/";
         }
     }, [logout]);

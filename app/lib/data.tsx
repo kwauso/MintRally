@@ -6,8 +6,8 @@ import path from 'path'
 
 export async function createEventGroupPage(name: string, master_address: string, groupId: number) {
     try {
-        const dirPath = path.join(process.cwd(), 'app', 'event-groups', "list", name)
-        await fs.mkdir(dirPath, { recursive: true })
+        //const dirPath = path.join(process.cwd(), 'app', 'event-groups', "list", name)
+        //await fs.mkdir(dirPath, { recursive: true })
         
         const pageContent = `"use client"
 
@@ -72,8 +72,8 @@ export default function ${name.replace(/[^a-zA-Z0-9]/g, '')}Page() {
     )
 }`
 
-        await fs.writeFile(path.join(dirPath, 'page.tsx'), pageContent)
-        console.log('ディレクトリとファイルを作成:', dirPath)
+        //await fs.writeFile(path.join(dirPath, 'page.tsx'), pageContent)
+        //console.log('ディレクトリとファイルを作成:', dirPath)
 
     } catch (error) {
         console.error('ページ作成エラー:', error)
