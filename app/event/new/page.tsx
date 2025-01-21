@@ -49,9 +49,6 @@ export default function CreateEvent(): React.ReactElement {
         }
 
         try {
-            const nftEnabled = formData.get('nftEnabled') === 'true'
-            const nftImageFile = formData.get('nftImageFile') as File | null
-
             formData.append('creator_address', user.account)
 
             const response = await fetch('/api/event', {
@@ -65,22 +62,6 @@ export default function CreateEvent(): React.ReactElement {
             }
 
             const result = await response.json() as APIResponse
-
-            if (nftEnabled && nftImageFile && result.data?.event?.id) {
-                try {
-                    await mintNFT(
-                        result.data.event.id,
-                        nftImageFile,
-                        formData.get('name') as string,
-                        formData.get('description') as string,
-                        user.account
-                    )
-                    console.log('NFT setup completed')
-                } catch (error) {
-                    console.error('NFT setup error:', error)
-                    alert('NFTの設定に失敗しました: ' + (error as Error).message)
-                }
-            }
 
             if (!result.success) {
                 throw new Error(result.message || '不明なエラーが発生しました')
