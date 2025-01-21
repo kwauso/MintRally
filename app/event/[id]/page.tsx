@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '../../../app/context/AuthContext'
 import Link from 'next/link'
 import { claimEventNFT } from '../../../blockchain/utils/lighthouse'
+import NFTHolders from './NFTHolders'
 
 type Event = {
     id: number
@@ -209,6 +210,10 @@ export default function EventDetail() {
                     </div>
                 </div>
             )}
+
+            <div className="event-holders-section">
+                <NFTHolders eventId={event.id} />
+            </div>
         </div>
     )
 }
