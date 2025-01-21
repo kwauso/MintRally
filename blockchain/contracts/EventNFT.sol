@@ -16,7 +16,10 @@ contract EventNFT is ERC721URIStorage, Ownable {
     function setEventNFT(uint256 eventId, string memory tokenURI) 
         public 
     {
-        require(msg.sender == eventCreators[eventId], "Not event creator");
+        require(
+            msg.sender == eventCreators[eventId] || msg.sender == owner(),
+            "Not authorized to set NFT"
+        );
         eventTokenURIs[eventId] = tokenURI;
     }
 
@@ -25,6 +28,7 @@ contract EventNFT is ERC721URIStorage, Ownable {
         returns (uint256) 
     {
         require(bytes(eventTokenURIs[eventId]).length > 0, "NFT not set for this event");
+        require(msg.sender != eventCreators[eventId], "Event creator cannot claim NFT");
         
         _tokenIds++;
         uint256 newTokenId = _tokenIds;
