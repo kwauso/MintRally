@@ -19,21 +19,13 @@ export async function uploadToLighthouse(file: File) {
     try {
         console.log('Starting file upload to Lighthouse...');
         
-        // ファイルをArrayBufferに変換
         const arrayBuffer = await file.arrayBuffer();
-        console.log('File converted to ArrayBuffer');
-        
-        // ArrayBufferをBufferに変換
         const buffer = Buffer.from(arrayBuffer);
-        console.log('ArrayBuffer converted to Buffer');
 
-        // Bufferを使用してアップロード
-        console.log('Uploading buffer to Lighthouse...');
         const response = await lighthouse.uploadBuffer(
             buffer,
             API_KEY
         );
-        console.log('Upload response:', response);
 
         if (!response.data || !response.data.Hash) {
             throw new Error('Invalid response from Lighthouse');
@@ -56,20 +48,13 @@ export async function uploadMetadataToLighthouse(metadata: any) {
     try {
         console.log('Starting metadata upload to Lighthouse...');
         
-        // メタデータをJSON文字列に変換
         const jsonString = JSON.stringify(metadata);
-        console.log('Metadata converted to JSON string');
-        
-        // 文字列をBufferに変換
         const buffer = Buffer.from(jsonString);
-        console.log('JSON string converted to Buffer');
 
-        console.log('Uploading metadata buffer to Lighthouse...');
         const response = await lighthouse.uploadBuffer(
             buffer,
             API_KEY
         );
-        console.log('Metadata upload response:', response);
 
         if (!response.data || !response.data.Hash) {
             throw new Error('Invalid response from Lighthouse');
@@ -184,7 +169,7 @@ export async function claimEventNFT(eventId: number) {
         console.log('Claiming NFT...');
         const claimTx = await nftContract.claimNFT(eventId);
         const receipt = await claimTx.wait();
-        console.log('NFT claimed');
+        console.log('NFT claimed successfully');
 
         return {
             success: true,
