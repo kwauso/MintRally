@@ -3,6 +3,7 @@
 /.next
 
 /.env
+/.env.local
 
 /prisma
 node_modules

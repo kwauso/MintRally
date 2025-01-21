@@ -117,7 +117,7 @@ export default function EventDetail() {
                         イベントグループに戻る
                     </Link>
                     <h1 className="event-groups-title">
-                        {event.name}
+                        イベント詳細
                     </h1>
                 </div>
             </div>
@@ -126,7 +126,7 @@ export default function EventDetail() {
                 <div className="event-card">
                     <div className="flex justify-between items-start gap-4 mb-4">
                         <h2 className="text-xl font-semibold text-gray-800 flex-grow">
-                            イベント詳細
+                        {event.name}
                         </h2>
                         {event.nftEnabled && (
                             <span className="small-square">
