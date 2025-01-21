@@ -17,6 +17,8 @@ type Event = {
         name: string
     }
     nftEnabled: boolean
+    nftTokenURI: string | null
+    pass: string | null
 }
 
 export default function EventDetail() {
@@ -26,6 +28,9 @@ export default function EventDetail() {
     const [event, setEvent] = useState<Event | null>(null)
     const [loading, setLoading] = useState(true)
     const [claimingNFT, setClaimingNFT] = useState(false)
+    const [pass, setPass] = useState('')
+    const [showPassModal, setShowPassModal] = useState(false)
+    const [passError, setPassError] = useState('')
 
     useEffect(() => {
         fetchEvent()
@@ -52,17 +57,37 @@ export default function EventDetail() {
     const handleClaimNFT = async () => {
         if (!event || !user) return
 
+        if (event.pass) {
+            if (!pass) {
+                setShowPassModal(true)
+                return
+            }
+            
+            if (pass !== event.pass) {
+                setPassError('あいことばが正しくありません')
+                return
+            }
+        }
+
         setClaimingNFT(true)
         try {
             const result = await claimEventNFT(event.id)
             alert('NFTの取得に成功しました！')
             console.log('NFT claim result:', result)
+            setShowPassModal(false)
+            setPass('')
+            setPassError('')
         } catch (error) {
             console.error('NFT claim error:', error)
             alert('NFTの取得に失敗しました: ' + (error as Error).message)
         } finally {
             setClaimingNFT(false)
         }
+    }
+
+    const handlePassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPass(e.target.value)
+        setPassError('')
     }
 
     if (loading) {
@@ -134,8 +159,62 @@ export default function EventDetail() {
                             </span>
                         </div>
                     </div>
+
+                    {event.nftEnabled && user && user.account !== event.creator_address && (
+                        <div className="mt-6 pt-4 border-t">
+                            <button
+                                onClick={handleClaimNFT}
+                                disabled={claimingNFT}
+                                className={`w-full py-2 px-4 rounded-lg font-medium ${
+                                    claimingNFT
+                                        ? 'bg-gray-300 cursor-not-allowed'
+                                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                }`}
+                            >
+                                {claimingNFT ? 'NFT受け取り中...' : 'NFTを受け取る'}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
+
+            {showPassModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4">
+                        <h3 className="text-lg font-semibold mb-4">あいことばを入力</h3>
+                        <input
+                            type="password"
+                            value={pass}
+                            onChange={handlePassChange}
+                            className={`w-full px-3 py-2 border rounded-lg mb-2 ${
+                                passError ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                            placeholder="あいことばを入力してください"
+                        />
+                        {passError && (
+                            <p className="text-red-500 text-sm mb-4">{passError}</p>
+                        )}
+                        <div className="flex justify-end gap-2 mt-4">
+                            <button
+                                onClick={() => {
+                                    setShowPassModal(false)
+                                    setPass('')
+                                    setPassError('')
+                                }}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                            >
+                                キャンセル
+                            </button>
+                            <button
+                                onClick={handleClaimNFT}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            >
+                                確認
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
