@@ -147,6 +147,10 @@ export default function MyPage() {
         }
     }
 
+    const handleNFTClick = (tokenId: number) => {
+        router.push(`/nft/${tokenId}`)
+    }
+
     if (!user) {
         return (
             <div className="container mx-auto px-4 py-8">
@@ -192,7 +196,13 @@ export default function MyPage() {
                                 </h3>
                                 <div className="nft-grid">
                                     {group.nfts.map((nft) => (
-                                        <div key={nft.tokenId} className="nft-card">
+                                        <div 
+                                            key={nft.tokenId} 
+                                            className="nft-card"
+                                            onClick={() => handleNFTClick(nft.tokenId)}
+                                            role="button"
+                                            tabIndex={0}
+                                        >
                                             {nft.metadata?.image && (
                                                 <div className="nft-image-container">
                                                     <img 
