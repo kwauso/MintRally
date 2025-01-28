@@ -138,7 +138,6 @@ export default function EventForm({
                                         />
                                     </label>
                                 </div>
-                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                             </div>
                         </div>
                         {imagePreview && (
@@ -149,13 +148,12 @@ export default function EventForm({
                                     color: '#374151',
                                     marginBottom: '0.5rem' 
                                 }}>
-                                    プレビュー:
+                                    画像:
                                 </p>
                                 <div style={{ 
                                     position: 'relative',
-                                    width: '128px',
-                                    height: '128px',
-                                    backgroundColor: '#f3f4f6',
+                                    width: '256px',
+                                    height: '256px',
                                     borderRadius: '0.5rem',
                                     overflow: 'hidden'
                                 }}>
