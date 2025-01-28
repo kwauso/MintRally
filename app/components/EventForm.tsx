@@ -14,6 +14,7 @@ export default function EventForm({
     const [loading, setLoading] = useState(false)
     const [nftEnabled, setNftEnabled] = useState(false)
     const [nftImageFile, setNftImageFile] = useState<File | null>(null)
+    const [imagePreview, setImagePreview] = useState<string | null>(null)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -121,7 +122,17 @@ export default function EventForm({
                                             name="file-upload"
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) => setNftImageFile(e.target.files?.[0] || null)}
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0] || null
+                                                setNftImageFile(file)
+                                                if (file) {
+                                                    const reader = new FileReader()
+                                                    reader.onloadend = () => {
+                                                        setImagePreview(reader.result as string)
+                                                    }
+                                                    reader.readAsDataURL(file)
+                                                }
+                                            }}
                                             className="sr-only"
                                             required={nftEnabled}
                                         />
@@ -130,15 +141,37 @@ export default function EventForm({
                                 <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                             </div>
                         </div>
-                        {nftImageFile && (
-                            <div className="mt-4">
-                                <Image
-                                    src={URL.createObjectURL(nftImageFile)}
-                                    alt="NFT preview"
-                                    width={200}
-                                    height={200}
-                                    className="rounded-xl object-cover"
-                                />
+                        {imagePreview && (
+                            <div style={{ marginTop: '1rem' }}>
+                                <p style={{ 
+                                    fontSize: '0.875rem', 
+                                    fontWeight: '500', 
+                                    color: '#374151',
+                                    marginBottom: '0.5rem' 
+                                }}>
+                                    プレビュー:
+                                </p>
+                                <div style={{ 
+                                    position: 'relative',
+                                    width: '128px',
+                                    height: '128px',
+                                    backgroundColor: '#f3f4f6',
+                                    borderRadius: '0.5rem',
+                                    overflow: 'hidden'
+                                }}>
+                                    <img
+                                        src={imagePreview}
+                                        alt="Preview"
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'contain'
+                                        }}
+                                    />
+                                </div>
                             </div>
                         )}
                     </div>
