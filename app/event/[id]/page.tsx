@@ -55,36 +55,22 @@ export default function EventDetail() {
         }
     }
 
-    const handleClaimNFT = async () => {
-        if (!event || !user) return
+    const handleClaimNFT = async (password: string) => {
+        if (!event || !user) return;
 
-        if (event.pass) {
-            if (!pass) {
-                setShowPassModal(true)
-                return
-            }
-            
-            if (pass !== event.pass) {
-                setPassError('あいことばが正しくありません')
-                return
-            }
-        }
-
-        setClaimingNFT(true)
+        setClaimingNFT(true);
         try {
-            const result = await claimEventNFT(event.id)
-            alert('NFTの取得に成功しました！')
-            console.log('NFT claim result:', result)
-            setShowPassModal(false)
-            setPass('')
-            setPassError('')
+            const result = await claimEventNFT(event.id, password);
+            alert('NFTの取得に成功しました！');
+            console.log('NFT claim result:', result);
+            setShowPassModal(false);
         } catch (error) {
-            console.error('NFT claim error:', error)
-            alert('NFTの取得に失敗しました: ' + (error as Error).message)
+            console.error('NFT claim error:', error);
+            alert('NFTの取得に失敗しました: ' + (error as Error).message);
         } finally {
-            setClaimingNFT(false)
+            setClaimingNFT(false);
         }
-    }
+    };
 
     const handlePassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPass(e.target.value)
@@ -164,7 +150,7 @@ export default function EventDetail() {
                     {event.nftEnabled && user && user.account !== event.creator_address && (
                         <div className="nft-claim-section">
                             <button
-                                onClick={handleClaimNFT}
+                                onClick={() => setShowPassModal(true)}
                                 disabled={claimingNFT}
                                 className="nft-claim-button"
                             >
@@ -201,7 +187,7 @@ export default function EventDetail() {
                                 キャンセル
                             </button>
                             <button
-                                onClick={handleClaimNFT}
+                                onClick={() => handleClaimNFT(pass)}
                                 className="modal-button modal-button-confirm"
                             >
                                 確認

@@ -1,8 +1,7 @@
-export const NFT_CONTRACT_ADDRESS = "0x8978f7C8c4F73A04faE9508bB82f0964a2C8Dc2e"
+export const NFT_CONTRACT_ADDRESS = "0xC805aD4B70Caf12363502Efea7B220612d82b96A"
 
 export const NFT_CONTRACT_ABI = [
-    // あなたのNFTコントラクトのABI
-    // 例：
+    // NFTコントラクトのABI
     {
       "inputs": [],
       "stateMutability": "nonpayable",
@@ -300,25 +299,6 @@ export const NFT_CONTRACT_ABI = [
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "eventId",
-          "type": "uint256"
-        }
-      ],
-      "name": "claimNFT",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
           "name": "",
           "type": "uint256"
         }
@@ -413,6 +393,30 @@ export const NFT_CONTRACT_ABI = [
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        }
+      ],
+      "name": "mintTo",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -659,5 +663,4 @@ export const NFT_CONTRACT_ABI = [
       "stateMutability": "nonpayable",
       "type": "function"
     }
-    // ... 他のABI定義
 ] 
