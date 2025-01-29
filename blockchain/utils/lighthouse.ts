@@ -150,7 +150,7 @@ export async function mintNFT(
 }
 
 // NFTを請求するための新しい関数を追加
-export async function claimEventNFT(eventId: number) {
+export async function claimEventNFT(eventId: number, password: string) {
     try {
         console.log('Starting NFT claim process...');
 
@@ -158,26 +158,42 @@ export async function claimEventNFT(eventId: number) {
             throw new Error('MetaMaskが見つかりません');
         }
 
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const nftContract = new ethers.Contract(
-            NFT_CONTRACT_ADDRESS,
-            NFT_CONTRACT_ABI,
-            signer
-        );
+        const accounts = await window.ethereum.request({ 
+            method: 'eth_requestAccounts' 
+        }) as string[];
 
-        console.log('Claiming NFT...');
-        const claimTx = await nftContract.claimNFT(eventId);
-        const receipt = await claimTx.wait();
-        console.log('NFT claimed successfully');
+        if (!accounts || accounts.length === 0) {
+            throw new Error('ウォレットが接続されていません');
+        }
+
+        const userAddress = accounts[0];
+
+        // パスワードをAPIに送信
+        const response = await fetch('/api/nft/claim', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                eventId,
+                userAddress,
+                password  // モーダルから渡されたパスワードを使用
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.message || 'NFT claim failed');
+        }
 
         return {
             success: true,
-            transactionHash: receipt.hash
+            transactionHash: data.transactionHash
         };
 
     } catch (error) {
         console.error('Error claiming NFT:', error);
-        throw new Error(`NFT claim failed: ${(error as Error).message}`);
+        throw error;
     }
 }

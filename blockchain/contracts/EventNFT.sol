@@ -23,17 +23,18 @@ contract EventNFT is ERC721URIStorage, Ownable {
         eventTokenURIs[eventId] = tokenURI;
     }
 
-    function claimNFT(uint256 eventId) 
+    function mintTo(address to, uint256 eventId) 
         public 
+        onlyOwner 
         returns (uint256) 
     {
         require(bytes(eventTokenURIs[eventId]).length > 0, "NFT not set for this event");
-        require(msg.sender != eventCreators[eventId], "Event creator cannot claim NFT");
+        require(to != eventCreators[eventId], "Event creator cannot receive NFT");
         
         _tokenIds++;
         uint256 newTokenId = _tokenIds;
         
-        _mint(msg.sender, newTokenId);
+        _mint(to, newTokenId);
         _setTokenURI(newTokenId, eventTokenURIs[eventId]);
         eventIds[newTokenId] = eventId;
 
