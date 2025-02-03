@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { useAuth } from '../../../app/context/AuthContext'
 import EventForm from '../../../app/components/EventForm'
 import { mintNFT } from '../../../blockchain/utils/lighthouse'
@@ -22,7 +22,7 @@ type APIResponse = {
     };
 }
 
-export default function CreateEvent(): React.ReactElement {
+function NewEventContent(): React.ReactElement {
     const router = useRouter()
     const searchParams = useSearchParams()
     const groupId = searchParams.get('groupId')
@@ -133,4 +133,13 @@ if (typeof document !== 'undefined') {
     const styleSheet = document.createElement('style')
     styleSheet.textContent = styles
     document.head.appendChild(styleSheet)
+}
+
+// メインのページコンポーネント
+export default function NewEventPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <NewEventContent />
+        </Suspense>
+    )
 }
