@@ -1,4 +1,4 @@
-import { MetaMaskInpageProvider } from '@metamask/providers';
+import type { MetaMaskInpageProvider } from '@metamask/providers'
 
 declare global {
   interface Window {
@@ -9,3 +9,6 @@ declare global {
 if (window.ethereum) {
   console.log('MetaMask is installed!');
 }
+
+// グローバルモジュールとして宣言するために必要
+export {}
