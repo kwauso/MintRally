@@ -3,11 +3,11 @@ import { NextResponse } from 'next/server'
 
 export async function POST(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { pass } = await request.json()
-        const eventId = parseInt(params.id)
+        const eventId = parseInt((await params).id)
 
         const event = await prisma.event.findUnique({
             where: { id: eventId }
