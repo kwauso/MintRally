@@ -23,6 +23,7 @@
 		"baseUrl": "."
 	},
 	"devDependencies": {
+		"@nomicfoundation/hardhat-ignition": "^0.15.9",
 		"@nomicfoundation/hardhat-toolbox": "^5.0.0",
 		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "22.9.0",
