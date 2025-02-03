@@ -21,6 +21,10 @@
       {
         "name": "next"
       }
+    ],
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
     ]
   },
   "include": [
@@ -29,7 +33,9 @@
     "**/*.ts",
     "**/*.tsx",
     "global.d.ts",
-    "src/**/*"
+    "src/**/*",
+    "types/**/*.d.ts",
+    "blockchain/**/*.ts"
   ],
   "exclude": [
     "node_modules"
