@@ -1,7 +1,7 @@
 {
 	"scripts": {
 		"dev": "next dev",
-		"build": "npx prisma generate && npm run build",
+		"build": "npx prisma generate && pnpm run build",
 		"start": "next start",
 		"lint": "next lint"
 	},
