@@ -1,12 +1,12 @@
 import { createEvent } from '../../lib/data'
 import { prisma } from '../../lib/prisma'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { uploadToLighthouse, uploadMetadataToLighthouse } from '../../../blockchain/utils/lighthouse'
 import { ethers } from 'ethers'
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '../../../blockchain/constants'
 
 // イベント一覧を取得するGETメソッド
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         const events = await prisma.event.findMany({
             orderBy: {
@@ -37,7 +37,7 @@ export async function GET() {
 }
 
 // 既存のPOSTメソッド
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
         

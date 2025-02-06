@@ -1,13 +1,7 @@
 import lighthouse from '@lighthouse-web3/sdk';
 import { ethers } from 'ethers'
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '../constants'
-import { MetaMaskInpageProvider } from '@metamask/providers';
-
-declare global {
-    interface Window {
-      ethereum?: MetaMaskInpageProvider;
-    }
-  }
+import { MetaMaskInpageProvider } from '@metamask/providers'
 
 const API_KEY = process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY || '';
 

@@ -5,13 +5,11 @@
 /.env
 /.env.local
 
-/prisma
 node_modules
 .env
 
 # Hardhat files
 /cache
-/artifacts
 
 # TypeChain files
 /typechain
@@ -23,3 +21,4 @@ node_modules
 
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
+.vercel
