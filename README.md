@@ -1,2 +1,2 @@
 # MintRally
-## Test
+## Deployed on Vercel
