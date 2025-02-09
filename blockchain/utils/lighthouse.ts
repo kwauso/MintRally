@@ -171,7 +171,7 @@ export async function claimEventNFT(eventId: number, password: string) {
             body: JSON.stringify({
                 eventId,
                 userAddress,
-                password  // モーダルから渡されたパスワードを使用
+                password
             })
         });
 
