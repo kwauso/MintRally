@@ -1,3 +1,4 @@
+'use client'
 import lighthouse from '@lighthouse-web3/sdk';
 import { ethers } from 'ethers'
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '../constants'
@@ -11,59 +12,71 @@ if (!API_KEY) {
 
 export async function uploadToLighthouse(file: File) {
     try {
-        console.log('Starting file upload to Lighthouse...');
-        
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+        // ファイルの詳細をログ出力
+        console.log('Uploading file:', {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            method: 'upload' // 使用するメソッドを明示
+        });
 
-        const response = await lighthouse.uploadBuffer(
-            buffer,
+        // uploadメソッドを使用（uploadBufferではない）
+        const output = await lighthouse.upload(
+            [file],
             API_KEY
         );
 
-        if (!response.data || !response.data.Hash) {
+        console.log('Upload response:', output);
+
+        if (!output.data?.Hash) {
             throw new Error('Invalid response from Lighthouse');
         }
 
-        const url = `https://gateway.lighthouse.storage/ipfs/${response.data.Hash}`;
-        console.log('File uploaded successfully to:', url);
-        return url;
+        return `https://gateway.lighthouse.storage/ipfs/${output.data.Hash}`;
 
     } catch (error: any) {
-        console.error('Detailed error in uploadToLighthouse:', error);
-        if (error.response) {
-            console.error('Error response:', error.response.data);
-        }
-        throw new Error(`Lighthouse upload failed: ${error.message}`);
+        // エラーの詳細をログ出力
+        console.error('Upload error details:', {
+            message: error.message,
+            response: error.response,
+            stack: error.stack
+        });
+        throw error;
     }
 }
 
 export async function uploadMetadataToLighthouse(metadata: any) {
     try {
-        console.log('Starting metadata upload to Lighthouse...');
-        
-        const jsonString = JSON.stringify(metadata);
-        const buffer = Buffer.from(jsonString);
+        console.log('Uploading metadata:', metadata);
 
-        const response = await lighthouse.uploadBuffer(
-            buffer,
+        const metadataBlob = new Blob([JSON.stringify(metadata)], {
+            type: 'application/json'
+        });
+        const metadataFile = new File([metadataBlob], 'metadata.json', {
+            type: 'application/json'
+        });
+
+        // 同じくuploadメソッドを使用
+        const output = await lighthouse.upload(
+            [metadataFile],
             API_KEY
         );
 
-        if (!response.data || !response.data.Hash) {
+        console.log('Metadata upload response:', output);
+
+        if (!output.data?.Hash) {
             throw new Error('Invalid response from Lighthouse');
         }
 
-        const url = `https://gateway.lighthouse.storage/ipfs/${response.data.Hash}`;
-        console.log('Metadata uploaded successfully to:', url);
-        return url;
+        return `https://gateway.lighthouse.storage/ipfs/${output.data.Hash}`;
 
     } catch (error: any) {
-        console.error('Detailed error in uploadMetadataToLighthouse:', error);
-        if (error.response) {
-            console.error('Error response:', error.response.data);
-        }
-        throw new Error(`Lighthouse metadata upload failed: ${error.message}`);
+        console.error('Metadata upload error:', {
+            message: error.message,
+            response: error.response,
+            stack: error.stack
+        });
+        throw error;
     }
 }
 
