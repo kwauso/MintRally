@@ -39,6 +39,9 @@ export async function GET(request: NextRequest) {
 // 既存のPOSTメソッド
 export async function POST(request: NextRequest) {
     try {
+        // 動的インポートを追加。commit message: "add lighthouse import"
+        const lighthouse = await import('@lighthouse-web3/sdk')
+
         const formData = await request.formData();
         
         // フォームデータの検証
