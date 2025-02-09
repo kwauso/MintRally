@@ -12,21 +12,15 @@ if (!API_KEY) {
 
 export async function uploadToLighthouse(file: File) {
     try {
-        // ファイルの詳細をログ出力
-        console.log('Uploading file:', {
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            method: 'upload' // 使用するメソッドを明示
-        });
+        // 基本的なFormDataの作成
+        const formData = new FormData();
+        formData.append('file', file);
 
-        // uploadメソッドを使用（uploadBufferではない）
+        // アップロードの実行
         const output = await lighthouse.upload(
-            [file],
+            formData,  // FormDataオブジェクトを渡す
             API_KEY
         );
-
-        console.log('Upload response:', output);
 
         if (!output.data?.Hash) {
             throw new Error('Invalid response from Lighthouse');
@@ -35,11 +29,10 @@ export async function uploadToLighthouse(file: File) {
         return `https://gateway.lighthouse.storage/ipfs/${output.data.Hash}`;
 
     } catch (error: any) {
-        // エラーの詳細をログ出力
-        console.error('Upload error details:', {
+        console.error('Upload error:', {
             message: error.message,
-            response: error.response,
-            stack: error.stack
+            status: error.response?.status,
+            data: error.response?.data
         });
         throw error;
     }
@@ -47,8 +40,6 @@ export async function uploadToLighthouse(file: File) {
 
 export async function uploadMetadataToLighthouse(metadata: any) {
     try {
-        console.log('Uploading metadata:', metadata);
-
         const metadataBlob = new Blob([JSON.stringify(metadata)], {
             type: 'application/json'
         });
@@ -56,13 +47,13 @@ export async function uploadMetadataToLighthouse(metadata: any) {
             type: 'application/json'
         });
 
-        // 同じくuploadメソッドを使用
+        const formData = new FormData();
+        formData.append('file', metadataFile);
+
         const output = await lighthouse.upload(
-            [metadataFile],
+            formData,  // FormDataオブジェクトを渡す
             API_KEY
         );
-
-        console.log('Metadata upload response:', output);
 
         if (!output.data?.Hash) {
             throw new Error('Invalid response from Lighthouse');
@@ -73,8 +64,8 @@ export async function uploadMetadataToLighthouse(metadata: any) {
     } catch (error: any) {
         console.error('Metadata upload error:', {
             message: error.message,
-            response: error.response,
-            stack: error.stack
+            status: error.response?.status,
+            data: error.response?.data
         });
         throw error;
     }
