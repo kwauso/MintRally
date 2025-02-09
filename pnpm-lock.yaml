@@ -23,6 +23,9 @@ importers:
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
+      bls-eth-wasm:
+        specifier: ^1.4.0
+        version: 1.4.0
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
