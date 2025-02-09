@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { uploadToLighthouse, mintNFT } from '../../blockchain/utils/lighthouse'
+import { uploadToLighthouse, uploadMetadataToLighthouse } from '../../blockchain/utils/lighthouse'
 
 export default function EventForm({ 
     eventGroupId, 
@@ -26,13 +26,45 @@ export default function EventForm({
             formData.append('nftEnabled', nftEnabled.toString())
             
             if (nftEnabled && nftImageFile) {
-                formData.append('nftImageFile', nftImageFile)
+                try {
+                    // 1. 画像のアップロード（クライアントサイドで実行）
+                    console.log('Uploading image to Lighthouse...')
+                    const nftImageUrl = await uploadToLighthouse(nftImageFile)
+                    console.log('Image uploaded successfully:', nftImageUrl)
+
+                    // 2. メタデータの作成とアップロード（クライアントサイドで実行）
+                    const metadata = {
+                        name: formData.get('name'),
+                        description: formData.get('description'),
+                        image: nftImageUrl,
+                        attributes: [
+                            {
+                                trait_type: "Event Date",
+                                value: formData.get('date')
+                            },
+                            {
+                                trait_type: "Creator",
+                                value: formData.get('creator_address')
+                            }
+                        ]
+                    }
+
+                    console.log('Uploading metadata to Lighthouse...')
+                    const nftMetadataUrl = await uploadMetadataToLighthouse(metadata)
+                    console.log('Metadata uploaded successfully:', nftMetadataUrl)
+
+                    // URLをformDataに追加
+                    formData.append('nftMetadataUrl', nftMetadataUrl)
+                } catch (error) {
+                    console.error('NFT setup error:', error)
+                    throw new Error('NFTの設定に失敗しました')
+                }
             }
 
             await onSubmit(formData)
         } catch (error) {
             console.error('Form submission error:', error)
-            alert('エラーが発生しました: ' + (error as Error).message)
+            alert('エラーが発生しました: ' + error.message)
         } finally {
             setLoading(false)
         }

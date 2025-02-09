@@ -6,7 +6,7 @@ import { ethers } from 'ethers'
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '../../../blockchain/constants'
 
 // イベント一覧を取得するGETメソッド
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         const events = await prisma.event.findMany({
             orderBy: {
@@ -39,9 +39,6 @@ export async function GET(request: NextRequest) {
 // 既存のPOSTメソッド
 export async function POST(request: NextRequest) {
     try {
-        // 動的インポートを追加。commit message: "add lighthouse import"
-        const lighthouse = await import('@lighthouse-web3/sdk')
-
         const formData = await request.formData();
         
         // フォームデータの検証
@@ -52,7 +49,7 @@ export async function POST(request: NextRequest) {
         const creator_address = formData.get('creator_address');
         const nftEnabled = formData.get('nftEnabled') === 'true';
         const pass = formData.get('pass');
-        const nftImageFile = formData.get('nftImageFile') as File | null;
+        const nftMetadataUrl = formData.get('nftMetadataUrl');
 
         // 必須フィールドの検証
         if (!name || !description || !date || !eventGroupId || !creator_address) {
@@ -63,54 +60,13 @@ export async function POST(request: NextRequest) {
             }, { status: 400 });
         }
 
-        // NFTが有効な場合、画像ファイルは必須
-        if (nftEnabled && !nftImageFile) {
+        // NFTが有効な場合、メタデータURLは必須
+        if (nftEnabled && !nftMetadataUrl) {
             return NextResponse.json({
                 success: false,
-                message: 'NFTを有効にする場合は画像が必要です',
-                error: 'NFT image required'
+                message: 'NFTメタデータURLが必要です',
+                error: 'NFT metadata URL required'
             }, { status: 400 });
-        }
-
-        let nftMetadataUrl = null;
-
-        // NFTが有効な場合、先にアップロードと設定を完了
-        if (nftEnabled && nftImageFile) {
-            try {
-                // 1. 画像のアップロード
-                console.log('Uploading image to Lighthouse...');
-                const nftImageUrl = await uploadToLighthouse(nftImageFile);
-                console.log('Image uploaded successfully:', nftImageUrl);
-
-                // 2. メタデータの作成とアップロード
-                const metadata = {
-                    name: name,
-                    description: description,
-                    image: nftImageUrl,
-                    attributes: [
-                        {
-                            trait_type: "Event Date",
-                            value: date
-                        },
-                        {
-                            trait_type: "Creator",
-                            value: creator_address
-                        }
-                    ]
-                };
-
-                console.log('Uploading metadata to Lighthouse...');
-                nftMetadataUrl = await uploadMetadataToLighthouse(metadata);
-                console.log('Metadata uploaded successfully:', nftMetadataUrl);
-
-            } catch (error) {
-                console.error('NFT setup error:', error);
-                return NextResponse.json({
-                    success: false,
-                    message: 'NFTの設定に失敗しました',
-                    error: error.message
-                }, { status: 500 });
-            }
         }
 
         // イベントをデータベースに保存
@@ -123,7 +79,7 @@ export async function POST(request: NextRequest) {
                 creator_address: creator_address as string,
                 pass: pass as string || null,
                 nftEnabled: nftEnabled,
-                nftTokenURI: nftMetadataUrl
+                nftTokenURI: nftMetadataUrl as string
             },
             include: {
                 eventGroup: true
