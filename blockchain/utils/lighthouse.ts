@@ -12,13 +12,25 @@ if (!API_KEY) {
 
 export async function uploadToLighthouse(file: File) {
     try {
-        // 基本的なFormDataの作成
+        // アップロード前のデバッグ情報
+        console.log('Upload attempt details:', {
+            fileInfo: {
+                name: file.name,
+                type: file.type,
+                size: file.size
+            },
+            apiKey: {
+                exists: !!API_KEY,
+                length: API_KEY.length,
+                firstChars: API_KEY ? API_KEY.substring(0, 4) : 'none'
+            }
+        });
+
         const formData = new FormData();
         formData.append('file', file);
 
-        // アップロードの実行
         const output = await lighthouse.upload(
-            formData,  // FormDataオブジェクトを渡す
+            formData,
             API_KEY
         );
 
