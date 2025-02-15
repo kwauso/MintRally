@@ -42,46 +42,31 @@ axios.interceptors.response.use(
 
 export async function uploadToLighthouse(file: File) {
     try {
+        console.log('File details:', {
+            name: file.name,
+            type: file.type,
+            size: file.size
+        });
+
         const formData = new FormData();
         formData.append('file', file);
 
-        // SDKを使用したアップロード
-        try {
-            console.log('Attempting upload with SDK...');
-            const output = await lighthouse.upload(
-                formData,
-                API_KEY
-            );
-            return `https://gateway.lighthouse.storage/ipfs/${output.data.Hash}`;
-        } catch (sdkError) {
-            console.error('SDK upload failed, trying direct API...', sdkError);
+        // SDKの標準的な使用方法に従う
+        const response = await lighthouse.upload(
+            formData,
+            API_KEY
+        );
 
-            // 直接APIを使用したフォールバック
-            const response = await axios.post(
-                'https://node.lighthouse.storage/api/v0/add',
-                formData,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Accept': 'application/json',
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    maxBodyLength: Infinity,
-                    maxContentLength: Infinity
-                }
-            );
+        console.log('Upload response:', response);
 
-            return `https://gateway.lighthouse.storage/ipfs/${response.data.Hash}`;
+        if (!response.data?.Hash) {
+            throw new Error('Invalid response from Lighthouse');
         }
 
+        return `https://gateway.lighthouse.storage/ipfs/${response.data.Hash}`;
+
     } catch (error) {
-        const axiosError = error as AxiosError;
-        console.error('Upload failed:', {
-            message: axiosError.message,
-            response: axiosError.response?.data,
-            status: axiosError.response?.status,
-            headers: axiosError.response?.headers
-        });
+        console.error('Upload error:', error);
         throw new Error('ファイルのアップロードに失敗しました');
     }
 }
