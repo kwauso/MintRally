@@ -11,36 +11,9 @@ if (!API_KEY) {
     throw new Error('Lighthouse API key is not set');
 }
 
-// Axiosのデフォルト設定を確認
-console.log('Axios defaults:', {
-    baseURL: axios.defaults.baseURL,
-    headers: axios.defaults.headers,
-    timeout: axios.defaults.timeout
-});
-
-// Axiosインターセプターを追加
-axios.interceptors.request.use(request => {
-    console.log('Axios Request:', {
-        url: request.url,
-        method: request.method,
-        headers: request.headers
-    });
-    return request;
-});
-
-axios.interceptors.response.use(
-    response => response,
-    error => {
-        console.error('Axios Error Interceptor:', {
-            config: error.config,
-            response: error.response,
-            message: error.message
-        });
-        return Promise.reject(error);
-    }
-);
 
 export async function uploadToLighthouse(file: File) {
+
     try {
         console.log('File details:', {
             name: file.name,
@@ -52,10 +25,7 @@ export async function uploadToLighthouse(file: File) {
         formData.append('file', file);
 
         // SDKの標準的な使用方法に従う
-        const response = await lighthouse.upload(
-            formData,
-            API_KEY
-        );
+        const response = await lighthouse.upload(file, API_KEY, undefined)
 
         console.log('Upload response:', response);
 
