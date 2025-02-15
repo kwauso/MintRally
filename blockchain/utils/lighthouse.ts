@@ -45,7 +45,7 @@ export async function uploadMetadataToLighthouse(metadata: any) {
     try {
 
         const output = await lighthouse.uploadText(
-            metadata,  
+            JSON.stringify(metadata),
             API_KEY
         );
 
