@@ -25,7 +25,7 @@ export async function uploadToLighthouse(file: File) {
         formData.append('file', file);
 
         // SDKの標準的な使用方法に従う
-        const response = await lighthouse.upload(file, API_KEY, undefined)
+        const response = await lighthouse.upload([file], API_KEY, undefined)
 
         console.log('Upload response:', response);
 
