@@ -43,26 +43,28 @@ export async function uploadToLighthouse(file: File) {
 
 export async function uploadMetadataToLighthouse(metadata: any) {
     try {
+        // メタデータをファイルとして扱う
+        const metadataBlob = new Blob([JSON.stringify(metadata)], {
+            type: 'application/json'
+        });
+        const metadataFile = new File([metadataBlob], 'metadata.json', {
+            type: 'application/json'
+        });
 
-        console.log(metadata)
-        
-        const output = await lighthouse.uploadText(
-            JSON.stringify(metadata),
+        // uploadメソッドを使用（uploadTextの代わりに）
+        const response = await lighthouse.upload(
+            [metadataFile],
             API_KEY
         );
 
-        if (!output.data?.Hash) {
+        if (!response.data?.Hash) {
             throw new Error('Invalid response from Lighthouse');
         }
 
-        return `https://gateway.lighthouse.storage/ipfs/${output.data.Hash}`;
+        return `https://gateway.lighthouse.storage/ipfs/${response.data.Hash}`;
 
-    } catch (error: any) {
-        console.error('Metadata upload error:', {
-            message: error.message,
-            status: error.response?.status,
-            data: error.response?.data
-        });
+    } catch (error) {
+        console.error('Metadata upload error:', error);
         throw error;
     }
 }
