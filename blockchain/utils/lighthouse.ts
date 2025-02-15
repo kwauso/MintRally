@@ -43,12 +43,11 @@ export async function uploadToLighthouse(file: File) {
 
 export async function uploadMetadataToLighthouse(metadata: any) {
     try {
-        const metadataBlob = new Blob([JSON.stringify(metadata)], {
-            type: 'application/json'
-        });
-        const metadataFile = new File([metadataBlob], 'metadata.json', {
-            type: 'application/json'
-        });
+        const metadataFile = new File(
+            [JSON.stringify(metadata)],
+            'metadata.json',
+            { type: 'application/json' }
+        );
 
         const formData = new FormData();
         formData.append('file', metadataFile);
