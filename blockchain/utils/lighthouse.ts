@@ -12,7 +12,6 @@ if (!API_KEY) {
 
 export async function uploadToLighthouse(file: File) {
     try {
-        // アップロード前のデバッグ情報
         console.log('Upload attempt details:', {
             fileInfo: {
                 name: file.name,
@@ -28,6 +27,20 @@ export async function uploadToLighthouse(file: File) {
 
         const formData = new FormData();
         formData.append('file', file);
+        
+        console.log('FormData contents:', {
+            hasFile: formData.has('file'),
+            fileName: file.name,
+            entries: Array.from(formData.entries()).map(([key, value]) => ({
+                key,
+                type: value instanceof File ? 'File' : typeof value
+            }))
+        });
+
+        console.log('Starting Lighthouse upload with:', {
+            formDataExists: !!formData,
+            apiKeyLength: API_KEY.length
+        });
 
         const output = await lighthouse.upload(
             formData,
@@ -41,10 +54,16 @@ export async function uploadToLighthouse(file: File) {
         return `https://gateway.lighthouse.storage/ipfs/${output.data.Hash}`;
 
     } catch (error: any) {
-        console.error('Upload error:', {
+        console.error('Upload error details:', {
             message: error.message,
             status: error.response?.status,
-            data: error.response?.data
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            config: {
+                url: error.config?.url,
+                method: error.config?.method,
+                headers: error.config?.headers
+            }
         });
         throw error;
     }
