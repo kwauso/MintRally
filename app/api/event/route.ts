@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
 
             } catch (error) {
                 console.error('Smart contract error:', error);
-                // スマートコントラクトの設定に失敗した場合、作成したイベントを削除
+                // スマートコントラクトの設定に失敗した場合、作成したイベントを削除する
                 await prisma.event.delete({
                     where: { id: event.id }
                 });
