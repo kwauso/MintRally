@@ -43,17 +43,9 @@ export async function uploadToLighthouse(file: File) {
 
 export async function uploadMetadataToLighthouse(metadata: any) {
     try {
-        const metadataFile = new File(
-            [JSON.stringify(metadata)],
-            'metadata.json',
-            { type: 'application/json' }
-        );
 
-        const formData = new FormData();
-        formData.append('file', metadataFile);
-
-        const output = await lighthouse.upload(
-            formData,  // FormDataオブジェクトを渡す
+        const output = await lighthouse.uploadText(
+            metadata,  
             API_KEY
         );
 
