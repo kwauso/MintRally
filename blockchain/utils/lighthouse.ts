@@ -3,6 +3,7 @@ import lighthouse from '@lighthouse-web3/sdk';
 import { ethers } from 'ethers'
 import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '../constants'
 import { MetaMaskInpageProvider } from '@metamask/providers'
+import axios, { AxiosError } from 'axios'
 
 const API_KEY = process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY || '';
 
@@ -10,61 +11,82 @@ if (!API_KEY) {
     throw new Error('Lighthouse API key is not set');
 }
 
+// Axiosのデフォルト設定を確認
+console.log('Axios defaults:', {
+    baseURL: axios.defaults.baseURL,
+    headers: axios.defaults.headers,
+    timeout: axios.defaults.timeout
+});
+
+// Axiosインターセプターを追加
+axios.interceptors.request.use(request => {
+    console.log('Axios Request:', {
+        url: request.url,
+        method: request.method,
+        headers: request.headers
+    });
+    return request;
+});
+
+axios.interceptors.response.use(
+    response => response,
+    error => {
+        console.error('Axios Error Interceptor:', {
+            config: error.config,
+            response: error.response,
+            message: error.message
+        });
+        return Promise.reject(error);
+    }
+);
+
 export async function uploadToLighthouse(file: File) {
     try {
-        console.log('Upload attempt details:', {
-            fileInfo: {
-                name: file.name,
-                type: file.type,
-                size: file.size
-            },
-            apiKey: {
-                exists: !!API_KEY,
-                length: API_KEY.length,
-                firstChars: API_KEY ? API_KEY.substring(0, 4) : 'none'
-            }
-        });
+        // APIエンドポイントの状態を確認
+        try {
+            const healthCheck = await axios.get('https://node.lighthouse.storage/api/health');
+            console.log('Lighthouse API Health:', healthCheck.data);
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            console.error('Lighthouse API Health Check Failed:', {
+                message: axiosError.message,
+                response: axiosError.response?.data,
+                status: axiosError.response?.status
+            });
+        }
 
         const formData = new FormData();
         formData.append('file', file);
-        
-        console.log('FormData contents:', {
-            hasFile: formData.has('file'),
-            fileName: file.name,
-            entries: Array.from(formData.entries()).map(([key, value]) => ({
-                key,
-                type: value instanceof File ? 'File' : typeof value
-            }))
-        });
 
-        console.log('Starting Lighthouse upload with:', {
-            formDataExists: !!formData,
-            apiKeyLength: API_KEY.length
-        });
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${API_KEY}`,
+                'Accept': 'application/json'
+            }
+        };
 
-        const output = await lighthouse.upload(
-            formData,
-            API_KEY
-        );
-
-        if (!output.data?.Hash) {
-            throw new Error('Invalid response from Lighthouse');
+        try {
+            const response = await axios.post(
+                'https://node.lighthouse.storage/api/v0/add',
+                formData,
+                config
+            );
+            console.log('Direct upload response:', response.data);
+            return `https://gateway.lighthouse.storage/ipfs/${response.data.Hash}`;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            console.error('Direct upload error:', {
+                message: axiosError.message,
+                response: axiosError.response?.data,
+                status: axiosError.response?.status,
+                config: axiosError.config
+            });
+            throw axiosError;
         }
 
-        return `https://gateway.lighthouse.storage/ipfs/${output.data.Hash}`;
-
-    } catch (error: any) {
-        console.error('Upload error details:', {
-            message: error.message,
-            status: error.response?.status,
-            statusText: error.response?.statusText,
-            data: error.response?.data,
-            config: {
-                url: error.config?.url,
-                method: error.config?.method,
-                headers: error.config?.headers
-            }
-        });
+    } catch (error) {
+        console.error('General error:', error);
         throw error;
     }
 }

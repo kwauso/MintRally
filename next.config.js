@@ -21,8 +21,7 @@ const nextConfig = {
     async headers() {
         return [
             {
-                // すべてのルートに対してCORS設定を適用
-                source: '/:path*',
+                source: '/api/:path*',
                 headers: [
                     { key: 'Access-Control-Allow-Credentials', value: 'true' },
                     { key: 'Access-Control-Allow-Origin', value: '*' },
