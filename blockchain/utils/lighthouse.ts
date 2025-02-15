@@ -51,7 +51,7 @@ export async function uploadMetadataToLighthouse(metadata: any) {
             type: 'application/json'
         });
 
-        // uploadメソッドを使用（uploadTextの代わりに）
+        // uploadメソッドを使用（uploadTextは小さいデータ向けなので、その代わりに）
         const response = await lighthouse.upload(
             [metadataFile],
             API_KEY
