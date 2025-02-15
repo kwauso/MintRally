@@ -49,6 +49,7 @@ export default function EventForm({
                         ]
                     }
 
+                    console.log(metadata)
                     console.log('Uploading metadata to Lighthouse...')
                     const nftMetadataUrl = await uploadMetadataToLighthouse(metadata)
                     console.log('Metadata uploaded successfully:', nftMetadataUrl)
