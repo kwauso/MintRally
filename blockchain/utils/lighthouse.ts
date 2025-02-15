@@ -42,52 +42,47 @@ axios.interceptors.response.use(
 
 export async function uploadToLighthouse(file: File) {
     try {
-        // APIエンドポイントの状態を確認
-        try {
-            const healthCheck = await axios.get('https://node.lighthouse.storage/api/health');
-            console.log('Lighthouse API Health:', healthCheck.data);
-        } catch (error) {
-            const axiosError = error as AxiosError;
-            console.error('Lighthouse API Health Check Failed:', {
-                message: axiosError.message,
-                response: axiosError.response?.data,
-                status: axiosError.response?.status
-            });
-        }
-
         const formData = new FormData();
         formData.append('file', file);
 
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${API_KEY}`,
-                'Accept': 'application/json'
-            }
-        };
-
+        // SDKを使用したアップロード
         try {
+            console.log('Attempting upload with SDK...');
+            const output = await lighthouse.upload(
+                formData,
+                API_KEY
+            );
+            return `https://gateway.lighthouse.storage/ipfs/${output.data.Hash}`;
+        } catch (sdkError) {
+            console.error('SDK upload failed, trying direct API...', sdkError);
+
+            // 直接APIを使用したフォールバック
             const response = await axios.post(
                 'https://node.lighthouse.storage/api/v0/add',
                 formData,
-                config
+                {
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Accept': 'application/json',
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    maxBodyLength: Infinity,
+                    maxContentLength: Infinity
+                }
             );
-            console.log('Direct upload response:', response.data);
+
             return `https://gateway.lighthouse.storage/ipfs/${response.data.Hash}`;
-        } catch (error) {
-            const axiosError = error as AxiosError;
-            console.error('Direct upload error:', {
-                message: axiosError.message,
-                response: axiosError.response?.data,
-                status: axiosError.response?.status,
-                config: axiosError.config
-            });
-            throw axiosError;
         }
 
     } catch (error) {
-        console.error('General error:', error);
-        throw error;
+        const axiosError = error as AxiosError;
+        console.error('Upload failed:', {
+            message: axiosError.message,
+            response: axiosError.response?.data,
+            status: axiosError.response?.status,
+            headers: axiosError.response?.headers
+        });
+        throw new Error('ファイルのアップロードに失敗しました');
     }
 }
 
