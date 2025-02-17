@@ -50,25 +50,62 @@ export async function POST(request: Request) {
         
         // トランザクション実行
         const tx = await nftContract.mintTo(userAddress, eventId);
-        console.log('Transaction sent:', tx.hash);
+        console.log('Mint transaction:', tx.hash);
 
         // トランザクション結果
         const receipt = await tx.wait();
         console.log('Transaction receipt:', receipt);
 
-        // トークンID確認
-        const tokenId = receipt.events?.find(e => e.event === 'Transfer')?.args?.tokenId;
-        console.log('Minted token ID:', tokenId);
+        // トランザクションログから正しくtokenIdを取得
+        let tokenId;
+        try {
+            const transferEvent = receipt.logs.find(log => {
+                try {
+                    const parsed = nftContract.interface.parseLog({
+                        topics: log.topics,
+                        data: log.data
+                    });
+                    return parsed?.name === 'Transfer';
+                } catch {
+                    return false;
+                }
+            });
 
-        // メタデータURI確認
-        const tokenURI = await nftContract.tokenURI(tokenId);
-        console.log('Token URI:', tokenURI);
+            if (transferEvent) {
+                const parsed = nftContract.interface.parseLog({
+                    topics: transferEvent.topics,
+                    data: transferEvent.data
+                });
+                tokenId = parsed.args.tokenId;
+                console.log('Found tokenId:', tokenId);
+            } else {
+                throw new Error('Transfer event not found in logs');
+            }
+        } catch (e) {
+            console.error('Error parsing transfer event:', e);
+            throw new Error('Failed to get tokenId from transaction');
+        }
+
+        // tokenIdの存在確認
+        if (!tokenId) {
+            throw new Error('TokenId is undefined');
+        }
+
+        // tokenURIの取得
+        let tokenURI;
+        try {
+            tokenURI = await nftContract.tokenURI(tokenId);
+            console.log('Token URI:', tokenURI);
+        } catch (e) {
+            console.error('Error getting tokenURI:', e);
+            throw new Error('Failed to get tokenURI');
+        }
 
         return NextResponse.json({
             success: true,
             message: 'NFTを発行しました',
             transactionHash: receipt.hash,
-            tokenId: tokenId,
+            tokenId: tokenId.toString(),
             tokenURI: tokenURI
         });
 
@@ -77,7 +114,7 @@ export async function POST(request: Request) {
         return NextResponse.json({
             success: false,
             message: 'NFTの発行に失敗しました',
-            error: (error as Error).message
+            error: error.message
         }, { status: 500 })
     }
 } 
