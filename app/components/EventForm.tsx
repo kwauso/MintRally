@@ -18,12 +18,11 @@ export default function EventForm({
     const [nftEnabled, setNftEnabled] = useState(false)
     const [nftImageFile, setNftImageFile] = useState<File | null>(null)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
-    const [isSubmitting, setIsSubmitting] = useState(false)
     const [createdEventId, setCreatedEventId] = useState<number | null>(null)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        setIsSubmitting(true)
+        setLoading(true)
 
         try {
             const formData = new FormData(e.currentTarget)
@@ -54,7 +53,6 @@ export default function EventForm({
                         ]
                     }
 
-                    console.log(metadata)
                     console.log('Uploading metadata to Lighthouse...')
                     const nftMetadataUrl = await uploadMetadataToLighthouse(metadata)
                     console.log('Metadata uploaded successfully:', nftMetadataUrl)
@@ -67,26 +65,32 @@ export default function EventForm({
                 }
             }
 
+            // onSubmitを使用してAPIリクエストを行う
+            await onSubmit(formData)
+
+            // APIレスポンスを取得
             const response = await fetch('/api/event', {
                 method: 'POST',
                 body: formData
             })
-            const data = await response.json()
 
+            const data = await response.json()
             if (!data.success) {
-                throw new Error(data.message)
+                throw new Error(data.message || '不明なエラーが発生しました')
             }
 
             setCreatedEventId(data.data.event.id)
 
-            if (!data.data.event.nftEnabled) {
-                router.push(`/events/${data.data.event.id}`)
+            if (!nftEnabled) {
+                router.push(`/event-groups/${eventGroupId}`)
+                router.refresh()
             }
+
         } catch (error) {
             console.error('Form submission error:', error)
             alert('エラーが発生しました: ' + error.message)
         } finally {
-            setIsSubmitting(false)
+            setLoading(false)
         }
     }
 
@@ -233,14 +237,14 @@ export default function EventForm({
                     <button 
                         type="submit" 
                         className="submit-button"
-                        disabled={isSubmitting}
+                        disabled={loading}
                     >
-                        {isSubmitting ? '作成中...' : 'イベントを作成'}
+                        {loading ? '作成中...' : 'イベントを作成'}
                     </button>
                 </div>
             </form>
 
-            {createdEventId && (
+            {createdEventId && nftEnabled && (
                 <div className="mt-8">
                     <NFTSetupProgress eventId={createdEventId} />
                 </div>
