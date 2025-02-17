@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
             }, { status: 400 });
         }
 
-        // イベントをデータベースに保存
+        // 1. まずイベントをデータベースに保存
         const event = await prisma.event.create({
             data: {
                 name: name as string,
@@ -77,90 +77,68 @@ export async function POST(request: NextRequest) {
                 date: new Date(date as string),
                 eventGroupId: parseInt(eventGroupId as string),
                 creator_address: creator_address as string,
-                pass: pass as string || null,
                 nftEnabled: nftEnabled,
                 nftTokenURI: nftMetadataUrl as string
-            },
-            include: {
-                eventGroup: true
             }
         });
 
-        // NFTが有効な場合、スマートコントラクトの設定
+        // 2. NFTが有効な場合、バックグラウンドで処理を開始
         if (nftEnabled && nftMetadataUrl) {
-            try {
-                // Alchemyのプロバイダー設定
-                const alchemyUrl = process.env.ALCHEMY_API_URL;
-                if (!alchemyUrl) {
-                    throw new Error('Alchemy URL is not configured');
-                }
-
-                console.log('Connecting to Alchemy...');
-                const provider = new ethers.JsonRpcProvider(alchemyUrl);
-
-                // プロバイダーの接続確認
-                try {
-                    const network = await provider.getNetwork();
-                    console.log('Connected to network:', network.name);
-                } catch (error) {
-                    console.error('Failed to connect to Alchemy:', error);
-                    throw new Error('ブロックチェーンネットワークへの接続に失敗しました');
-                }
-
-                const privateKey = process.env.PRIVATE_KEY;
-                if (!privateKey) {
-                    throw new Error('Private key is not configured');
-                }
-
-                const wallet = new ethers.Wallet(privateKey, provider);
-                console.log('Wallet connected:', wallet.address);
-
-                const nftContract = new ethers.Contract(
-                    NFT_CONTRACT_ADDRESS,
-                    NFT_CONTRACT_ABI,
-                    wallet
-                );
-
-                // イベント作成者を設定
-                console.log('Setting event creator...');
-                const setCreatorTx = await nftContract.setEventCreator(event.id, creator_address);
-                console.log('Waiting for setCreator transaction...');
-                await setCreatorTx.wait();
-                console.log('Event creator set successfully');
-
-                // NFTメタデータURIを設定
-                console.log('Setting NFT metadata...');
-                const setNftTx = await nftContract.setEventNFT(event.id, nftMetadataUrl);
-                console.log('Waiting for setNFT transaction...');
-                await setNftTx.wait();
-                console.log('NFT metadata set successfully');
-
-            } catch (error) {
-                console.error('Smart contract error:', error);
-                // スマートコントラクトの設定に失敗した場合、作成したイベントを削除
-                await prisma.event.delete({
-                    where: { id: event.id }
-                });
-
-                return NextResponse.json({
-                    success: false,
-                    message: 'スマートコントラクトの設定に失敗しました',
-                    error: error.message
-                }, { status: 500 });
-            }
+            setupNFTInBackground(
+                event.id, 
+                creator_address as string, 
+                nftMetadataUrl as string
+            );
         }
 
+        // 3. すぐにレスポンスを返す
         return NextResponse.json({
             success: true,
             data: { event }
         });
 
     } catch (error) {
-        console.error('Error in POST /api/event:', error);
+        console.error('Event creation error:', error);
         return NextResponse.json({
             success: false,
             message: 'イベントの作成に失敗しました',
-            error: error.message || 'Unknown error'
+            error: error.message
         }, { status: 500 });
+    }
+}
+
+// バックグラウンド処理関数を追加
+async function setupNFTInBackground(
+    eventId: number,
+    creatorAddress: string,
+    metadataUrl: string
+) {
+    try {
+        const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_API_URL);
+        const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+        const nftContract = new ethers.Contract(
+            NFT_CONTRACT_ADDRESS,
+            NFT_CONTRACT_ABI,
+            wallet
+        );
+
+        // イベント作成者とメタデータの設定
+        const setCreatorTx = await nftContract.setEventCreator(eventId, creatorAddress);
+        await setCreatorTx.wait();
+
+        const setNftTx = await nftContract.setEventNFT(eventId, metadataUrl);
+        await setNftTx.wait();
+
+    } catch (error) {
+        console.error('NFT setup error:', error);
+        
+        // エラー時はイベントを削除
+        try {
+            await prisma.event.delete({
+                where: { id: eventId }
+            });
+        } catch (deleteError) {
+            console.error('Event deletion error:', deleteError);
+        }
     }
 }

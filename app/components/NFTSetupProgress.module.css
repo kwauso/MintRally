@@ -1,0 +1,53 @@
+.container {
+    padding: 1.5rem;
+    background-color: var(--color-background-secondary);
+    border-radius: var(--border-radius-lg);
+    margin-top: 1.5rem;
+    border: 1px solid var(--color-border);
+}
+
+.title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+}
+
+.progressContainer {
+    width: 100%;
+    height: 6px;
+    background-color: var(--color-background-tertiary);
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+}
+
+.progressBar {
+    height: 100%;
+    background-color: var(--color-primary);
+    transition: width 0.3s ease-in-out;
+}
+
+.status {
+    margin-top: 0.75rem;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.complete {
+    margin-top: 0.75rem;
+    color: var(--color-success);
+    font-weight: var(--font-weight-medium);
+}
+
+.error {
+    padding: 1.5rem;
+    background-color: var(--color-error-background);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-error-border);
+}
+
+.error p {
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+} 
