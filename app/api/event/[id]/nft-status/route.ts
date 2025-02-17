@@ -4,10 +4,10 @@ import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from '../../../../../blockchai
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { eventId: string } }
+    { params }: { params: Promise<{ eventId: string }> }
 ) {
     try {
-        const eventId = parseInt(params.eventId);
+        const eventId = parseInt((await params).eventId);
         
         const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_API_URL);
         const nftContract = new ethers.Contract(
