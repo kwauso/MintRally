@@ -41,7 +41,7 @@ export async function POST(request: Request) {
             adminWallet
         )
 
-        // NFTのミント（管理者のウォレットから）
+        // NFTのミント（管理者のウォレットからガス代を支払う）
         const tx = await nftContract.mintTo(
             userAddress,  // 受け取るユーザーのアドレス
             eventId      // イベントID
