@@ -67,7 +67,7 @@ function NewEventContent(): React.ReactElement {
                 throw new Error(result.message || '不明なエラーが発生しました')
             }
 
-            router.push(`/event-groups/${result.data?.event.eventGroupId}`)
+            //router.push(`/event-groups/${result.data?.event.eventGroupId}`)
             router.refresh()
         } catch (error) {
             console.error('Error:', error)
