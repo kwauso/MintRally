@@ -59,6 +59,7 @@ export default function EventForm({
 
                     // URLをformDataに追加
                     formData.append('nftMetadataUrl', nftMetadataUrl)
+                    console.log("nftMetadataUrl:", nftMetadataUrl)
                 } catch (error) {
                     console.error('NFT setup error:', error)
                     throw new Error('NFTの設定に失敗しました')
