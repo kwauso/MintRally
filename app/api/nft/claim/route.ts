@@ -41,18 +41,36 @@ export async function POST(request: Request) {
             adminWallet
         )
 
-        // NFTのミント（管理者のウォレットからガス代を支払う）
-        const tx = await nftContract.mintTo(
-            userAddress,  // 受け取るユーザーのアドレス
-            eventId      // イベントID
-        )
-        const receipt = await tx.wait()
+        // ネットワーク確認
+        const network = await provider.getNetwork();
+        console.log('Network:', network);
+
+        // コントラクト確認
+        console.log('Contract address:', NFT_CONTRACT_ADDRESS);
+        
+        // トランザクション実行
+        const tx = await nftContract.mintTo(userAddress, eventId);
+        console.log('Transaction sent:', tx.hash);
+
+        // トランザクション結果
+        const receipt = await tx.wait();
+        console.log('Transaction receipt:', receipt);
+
+        // トークンID確認
+        const tokenId = receipt.events?.find(e => e.event === 'Transfer')?.args?.tokenId;
+        console.log('Minted token ID:', tokenId);
+
+        // メタデータURI確認
+        const tokenURI = await nftContract.tokenURI(tokenId);
+        console.log('Token URI:', tokenURI);
 
         return NextResponse.json({
             success: true,
             message: 'NFTを発行しました',
-            transactionHash: receipt.hash
-        })
+            transactionHash: receipt.hash,
+            tokenId: tokenId,
+            tokenURI: tokenURI
+        });
 
     } catch (error) {
         console.error('NFT claim error:', error)
