@@ -96,83 +96,83 @@ export default function EventForm({
 
     return (
         <div>
-            <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="form-group">
-                    <label htmlFor="name" className="form-label">
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <label htmlFor="name" style={{ marginBottom: '0.5rem' }}>
                         イベント名
                     </label>
                     <input
                         id="name"
                         name="name"
                         type="text"
-                        className="form-input"
+                        style={{ padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: '0.375rem' }}
                         required
                         placeholder=""
                     />
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="description" className="form-label">
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <label htmlFor="description" style={{ marginBottom: '0.5rem' }}>
                         説明
                     </label>
                     <textarea
                         id="description"
                         name="description"
-                        className="form-input min-h-[120px] resize-y"
+                        style={{ padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: '0.375rem', minHeight: '120px', resize: 'vertical' }}
                         required
                         placeholder=""
                     />
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="date" className="form-label">
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <label htmlFor="date" style={{ marginBottom: '0.5rem' }}>
                         開催日時
                     </label>
                     <input
                         id="date"
                         name="date"
                         type="datetime-local"
-                        className="form-input"
+                        style={{ padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: '0.375rem' }}
                         required
                     />
                 </div>
 
-                <div className="form-group">
-                    <label className="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all duration-200 cursor-pointer">
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.75rem', cursor: 'pointer' }}>
                         <input
                             type="checkbox"
                             checked={nftEnabled}
                             onChange={(e) => setNftEnabled(e.target.checked)}
-                            className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-md transition-all duration-200"
+                            style={{ height: '1.25rem', width: '1.25rem', accentColor: '#2563eb', border: '1px solid #e5e7eb', borderRadius: '0.375rem' }}
                         />
-                        <span className="form-label">NFTを有効にする</span>
+                        <span style={{ marginBottom: '0.5rem' }}>NFTを有効にする</span>
                     </label>
                 </div>
 
                 {nftEnabled && (
-                    <div className="space-y-6 border-t border-gray-200 pt-6">
-                        <div className="form-group">
-                            <label htmlFor="pass" className="form-label">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid #e5e7eb', paddingTop: '1rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <label htmlFor="pass" style={{ marginBottom: '0.5rem' }}>
                                 あいことば
                             </label>
                             <input
                                 id="pass"
                                 name="pass"
                                 type="password"
-                                className="form-input"
+                                style={{ padding: '0.5rem', border: '1px solid #e5e7eb', borderRadius: '0.375rem' }}
                                 required={nftEnabled}
                                 placeholder=""
                             />
                         </div>
 
-                        <div className="form-group">
-                            <label className="form-label">
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <label style={{ marginBottom: '0.5rem' }}>
                                 NFT画像
                             </label>
-                            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-gray-400 transition-all duration-200">
-                                <div className="space-y-1 text-center">
-                                    <div className="flex text-sm text-gray-600">
-                                        <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                            <div style={{ padding: '1.5rem', border: '2px dashed #e5e7eb', borderRadius: '0.75rem' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                                    <div style={{ fontSize: '0.875rem', color: '#374151' }}>
+                                        <label htmlFor="file-upload" style={{ color: '#2563eb', cursor: 'pointer' }}>
                                             <span>画像をアップロード</span>
                                             <input
                                                 id="file-upload"
@@ -190,7 +190,7 @@ export default function EventForm({
                                                         reader.readAsDataURL(file)
                                                     }
                                                 }}
-                                                className="sr-only"
+                                                style={{ display: 'none' }}
                                                 required={nftEnabled}
                                             />
                                         </label>
@@ -205,12 +205,13 @@ export default function EventForm({
                                         color: '#374151',
                                         marginBottom: '0.5rem' 
                                     }}>
-                                        画像:
+                                        プレビュー:
                                     </p>
                                     <div style={{ 
                                         position: 'relative',
-                                        width: '256px',
-                                        height: '256px',
+                                        width: '128px',
+                                        height: '128px',
+                                        backgroundColor: '#f3f4f6',
                                         borderRadius: '0.5rem',
                                         overflow: 'hidden'
                                     }}>
@@ -233,10 +234,10 @@ export default function EventForm({
                     </div>
                 )}
 
-                <div className="form-group mt-8">
+                <div style={{ display: 'flex', flexDirection: 'column', marginTop: '2rem' }}>
                     <button 
                         type="submit" 
-                        className="submit-button"
+                        style={{ padding: '0.75rem 1.5rem', backgroundColor: '#2563eb', color: '#fff', border: 'none', borderRadius: '0.375rem', cursor: 'pointer' }}
                         disabled={loading}
                     >
                         {loading ? '作成中...' : 'イベントを作成'}
@@ -245,7 +246,7 @@ export default function EventForm({
             </form>
 
             {createdEventId && nftEnabled && (
-                <div className="mt-8">
+                <div style={{ marginTop: '2rem' }}>
                     <NFTSetupProgress eventId={createdEventId} />
                 </div>
             )}
