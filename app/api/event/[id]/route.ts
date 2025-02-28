@@ -38,7 +38,7 @@ export async function GET(
         console.error('イベント取得エラー:', error)
         return NextResponse.json({
             success: false,
-            message: 'イベントの取得に失敗しました',
+            message: 'イベント情報の取得に失敗しました',
             error: (error as Error).message
         }, { status: 500 })
     }
