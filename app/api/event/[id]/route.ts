@@ -25,7 +25,7 @@ export async function GET(
         if (!event) {
             return NextResponse.json({
                 success: false,
-                message: 'イベントが見つかりませんでした'
+                message: 'イベントが見つかりません'
             }, { status: 404 })
         }
 

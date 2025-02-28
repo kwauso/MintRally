@@ -17,7 +17,7 @@ export default function Page() {
             {isLoggedIn ? (
                 <h1>Your are in help</h1>
             ) : (
-                <h1>Not logged in</h1> // ログインしていない場合はログインページを表示
+                <h1>Not logged in</h1> // ログインしていない場合はログインページを表示する
             )}
         </div>
     );
